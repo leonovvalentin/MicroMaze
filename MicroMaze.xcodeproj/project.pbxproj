@@ -1,0 +1,297 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		84DEA95B14DA63960051BAFC /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84DEA95A14DA63960051BAFC /* UIKit.framework */; };
+		84DEA95D14DA63960051BAFC /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84DEA95C14DA63960051BAFC /* Foundation.framework */; };
+		84DEA95F14DA63960051BAFC /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84DEA95E14DA63960051BAFC /* CoreGraphics.framework */; };
+		84DEA96514DA63960051BAFC /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 84DEA96314DA63960051BAFC /* InfoPlist.strings */; };
+		84DEA96714DA63960051BAFC /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 84DEA96614DA63960051BAFC /* main.m */; };
+		84DEA96B14DA63960051BAFC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 84DEA96A14DA63960051BAFC /* AppDelegate.m */; };
+		84DEA96E14DA63960051BAFC /* MasterViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84DEA96D14DA63960051BAFC /* MasterViewController.m */; };
+		84DEA97114DA63960051BAFC /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84DEA97014DA63960051BAFC /* DetailViewController.m */; };
+		84DEA97414DA63960051BAFC /* MasterViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84DEA97214DA63960051BAFC /* MasterViewController.xib */; };
+		84DEA97714DA63960051BAFC /* DetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84DEA97514DA63960051BAFC /* DetailViewController.xib */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		84DEA95614DA63960051BAFC /* MicroMaze.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MicroMaze.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		84DEA95A14DA63960051BAFC /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		84DEA95C14DA63960051BAFC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		84DEA95E14DA63960051BAFC /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		84DEA96214DA63960051BAFC /* MicroMaze-Info.plist */ = {isa = PBXFileReference; path = "MicroMaze-Info.plist"; sourceTree = "<group>"; };
+		84DEA96414DA63960051BAFC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		84DEA96614DA63960051BAFC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		84DEA96814DA63960051BAFC /* MicroMaze-Prefix.pch */ = {isa = PBXFileReference; path = "MicroMaze-Prefix.pch"; sourceTree = "<group>"; };
+		84DEA96914DA63960051BAFC /* AppDelegate.h */ = {isa = PBXFileReference; path = AppDelegate.h; sourceTree = "<group>"; };
+		84DEA96A14DA63960051BAFC /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		84DEA96C14DA63960051BAFC /* MasterViewController.h */ = {isa = PBXFileReference; path = MasterViewController.h; sourceTree = "<group>"; };
+		84DEA96D14DA63960051BAFC /* MasterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MasterViewController.m; sourceTree = "<group>"; };
+		84DEA96F14DA63960051BAFC /* DetailViewController.h */ = {isa = PBXFileReference; path = DetailViewController.h; sourceTree = "<group>"; };
+		84DEA97014DA63960051BAFC /* DetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
+		84DEA97314DA63960051BAFC /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MasterViewController.xib; sourceTree = "<group>"; };
+		84DEA97614DA63960051BAFC /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/DetailViewController.xib; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		84DEA95314DA63960051BAFC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				84DEA95B14DA63960051BAFC /* UIKit.framework in Frameworks */,
+				84DEA95D14DA63960051BAFC /* Foundation.framework in Frameworks */,
+				84DEA95F14DA63960051BAFC /* CoreGraphics.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		84DEA94B14DA63960051BAFC = {
+			isa = PBXGroup;
+			children = (
+				84DEA96014DA63960051BAFC /* MicroMaze */,
+				84DEA95914DA63960051BAFC /* Frameworks */,
+				84DEA95714DA63960051BAFC /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		84DEA95714DA63960051BAFC /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				84DEA95614DA63960051BAFC /* MicroMaze.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		84DEA95914DA63960051BAFC /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				84DEA95A14DA63960051BAFC /* UIKit.framework */,
+				84DEA95C14DA63960051BAFC /* Foundation.framework */,
+				84DEA95E14DA63960051BAFC /* CoreGraphics.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		84DEA96014DA63960051BAFC /* MicroMaze */ = {
+			isa = PBXGroup;
+			children = (
+				84DEA96914DA63960051BAFC /* AppDelegate.h */,
+				84DEA96A14DA63960051BAFC /* AppDelegate.m */,
+				84DEA96C14DA63960051BAFC /* MasterViewController.h */,
+				84DEA96D14DA63960051BAFC /* MasterViewController.m */,
+				84DEA96F14DA63960051BAFC /* DetailViewController.h */,
+				84DEA97014DA63960051BAFC /* DetailViewController.m */,
+				84DEA97214DA63960051BAFC /* MasterViewController.xib */,
+				84DEA97514DA63960051BAFC /* DetailViewController.xib */,
+				84DEA96114DA63960051BAFC /* Supporting Files */,
+			);
+			path = MicroMaze;
+			sourceTree = "<group>";
+		};
+		84DEA96114DA63960051BAFC /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				84DEA96214DA63960051BAFC /* MicroMaze-Info.plist */,
+				84DEA96314DA63960051BAFC /* InfoPlist.strings */,
+				84DEA96614DA63960051BAFC /* main.m */,
+				84DEA96814DA63960051BAFC /* MicroMaze-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		84DEA95514DA63960051BAFC /* MicroMaze */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 84DEA97A14DA63960051BAFC /* Build configuration list for PBXNativeTarget "MicroMaze" */;
+			buildPhases = (
+				84DEA95214DA63960051BAFC /* Sources */,
+				84DEA95314DA63960051BAFC /* Frameworks */,
+				84DEA95414DA63960051BAFC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MicroMaze;
+			productName = MicroMaze;
+			productReference = 84DEA95614DA63960051BAFC /* MicroMaze.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		84DEA94D14DA63960051BAFC /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0420;
+			};
+			buildConfigurationList = 84DEA95014DA63960051BAFC /* Build configuration list for PBXProject "MicroMaze" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 84DEA94B14DA63960051BAFC;
+			productRefGroup = 84DEA95714DA63960051BAFC /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				84DEA95514DA63960051BAFC /* MicroMaze */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		84DEA95414DA63960051BAFC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				84DEA96514DA63960051BAFC /* InfoPlist.strings in Resources */,
+				84DEA97414DA63960051BAFC /* MasterViewController.xib in Resources */,
+				84DEA97714DA63960051BAFC /* DetailViewController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		84DEA95214DA63960051BAFC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				84DEA96714DA63960051BAFC /* main.m in Sources */,
+				84DEA96B14DA63960051BAFC /* AppDelegate.m in Sources */,
+				84DEA96E14DA63960051BAFC /* MasterViewController.m in Sources */,
+				84DEA97114DA63960051BAFC /* DetailViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		84DEA96314DA63960051BAFC /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				84DEA96414DA63960051BAFC /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		84DEA97214DA63960051BAFC /* MasterViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				84DEA97314DA63960051BAFC /* en */,
+			);
+			name = MasterViewController.xib;
+			sourceTree = "<group>";
+		};
+		84DEA97514DA63960051BAFC /* DetailViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				84DEA97614DA63960051BAFC /* en */,
+			);
+			name = DetailViewController.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		84DEA97814DA63960051BAFC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		84DEA97914DA63960051BAFC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 5.0;
+				OTHER_CFLAGS = "-DNS_BLOCK_ASSERTIONS=1";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		84DEA97B14DA63960051BAFC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "MicroMaze/MicroMaze-Prefix.pch";
+				INFOPLIST_FILE = "MicroMaze/MicroMaze-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Debug;
+		};
+		84DEA97C14DA63960051BAFC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "MicroMaze/MicroMaze-Prefix.pch";
+				INFOPLIST_FILE = "MicroMaze/MicroMaze-Info.plist";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				WRAPPER_EXTENSION = app;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		84DEA95014DA63960051BAFC /* Build configuration list for PBXProject "MicroMaze" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				84DEA97814DA63960051BAFC /* Debug */,
+				84DEA97914DA63960051BAFC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		84DEA97A14DA63960051BAFC /* Build configuration list for PBXNativeTarget "MicroMaze" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				84DEA97B14DA63960051BAFC /* Debug */,
+				84DEA97C14DA63960051BAFC /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 84DEA94D14DA63960051BAFC /* Project object */;
+}
