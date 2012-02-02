@@ -86,11 +86,51 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		8468935A14DA6740002B093F /* xibs */ = {
+			isa = PBXGroup;
+			children = (
+				84DEA97214DA63960051BAFC /* MasterViewController.xib */,
+				84DEA99114DA64280051BAFC /* LevelsViewController.xib */,
+				84DEA97514DA63960051BAFC /* DetailViewController.xib */,
+				84DEA99714DA64280051BAFC /* RecordsViewController.xib */,
+				84DEA99514DA64280051BAFC /* RecordsDetailViewController.xib */,
+				84DEA99314DA64280051BAFC /* OptionsViewController.xib */,
+			);
+			name = xibs;
+			sourceTree = "<group>";
+		};
+		8468935B14DA6758002B093F /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				84DEA96C14DA63960051BAFC /* MasterViewController.h */,
+				84DEA96D14DA63960051BAFC /* MasterViewController.m */,
+				84DEA98314DA641D0051BAFC /* LevelsViewController.h */,
+				84DEA98414DA641D0051BAFC /* LevelsViewController.m */,
+				84DEA96F14DA63960051BAFC /* DetailViewController.h */,
+				84DEA97014DA63960051BAFC /* DetailViewController.m */,
+				84DEA98914DA641D0051BAFC /* RecordsViewController.h */,
+				84DEA98A14DA641D0051BAFC /* RecordsViewController.m */,
+				84DEA98714DA641D0051BAFC /* RecordsDetailViewController.h */,
+				84DEA98814DA641D0051BAFC /* RecordsDetailViewController.m */,
+				84DEA98514DA641D0051BAFC /* OptionsViewController.h */,
+				84DEA98614DA641D0051BAFC /* OptionsViewController.m */,
+			);
+			name = Controllers;
+			sourceTree = "<group>";
+		};
+		8468935C14DA67AF002B093F /* Auxiliary files */ = {
+			isa = PBXGroup;
+			children = (
+				84DEA98B14DA641D0051BAFC /* Vector.h */,
+				84DEA98114DA641D0051BAFC /* Ball.h */,
+				84DEA98214DA641D0051BAFC /* Ball.m */,
+			);
+			name = "Auxiliary files";
+			sourceTree = "<group>";
+		};
 		84DEA94B14DA63960051BAFC = {
 			isa = PBXGroup;
 			children = (
-				84DEA99F14DA64480051BAFC /* QuartzCore.framework */,
-				84DEA99D14DA64410051BAFC /* CoreMotion.framework */,
 				84DEA97D14DA63BC0051BAFC /* Images */,
 				84DEA97E14DA63BC0051BAFC /* Levels */,
 				84DEA96014DA63960051BAFC /* MicroMaze */,
@@ -110,6 +150,8 @@
 		84DEA95914DA63960051BAFC /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				84DEA99F14DA64480051BAFC /* QuartzCore.framework */,
+				84DEA99D14DA64410051BAFC /* CoreMotion.framework */,
 				84DEA95A14DA63960051BAFC /* UIKit.framework */,
 				84DEA95C14DA63960051BAFC /* Foundation.framework */,
 				84DEA95E14DA63960051BAFC /* CoreGraphics.framework */,
@@ -120,29 +162,11 @@
 		84DEA96014DA63960051BAFC /* MicroMaze */ = {
 			isa = PBXGroup;
 			children = (
-				84DEA99114DA64280051BAFC /* LevelsViewController.xib */,
-				84DEA99314DA64280051BAFC /* OptionsViewController.xib */,
-				84DEA99514DA64280051BAFC /* RecordsDetailViewController.xib */,
-				84DEA99714DA64280051BAFC /* RecordsViewController.xib */,
-				84DEA98114DA641D0051BAFC /* Ball.h */,
-				84DEA98214DA641D0051BAFC /* Ball.m */,
-				84DEA98314DA641D0051BAFC /* LevelsViewController.h */,
-				84DEA98414DA641D0051BAFC /* LevelsViewController.m */,
-				84DEA98514DA641D0051BAFC /* OptionsViewController.h */,
-				84DEA98614DA641D0051BAFC /* OptionsViewController.m */,
-				84DEA98714DA641D0051BAFC /* RecordsDetailViewController.h */,
-				84DEA98814DA641D0051BAFC /* RecordsDetailViewController.m */,
-				84DEA98914DA641D0051BAFC /* RecordsViewController.h */,
-				84DEA98A14DA641D0051BAFC /* RecordsViewController.m */,
-				84DEA98B14DA641D0051BAFC /* Vector.h */,
 				84DEA96914DA63960051BAFC /* AppDelegate.h */,
 				84DEA96A14DA63960051BAFC /* AppDelegate.m */,
-				84DEA96C14DA63960051BAFC /* MasterViewController.h */,
-				84DEA96D14DA63960051BAFC /* MasterViewController.m */,
-				84DEA96F14DA63960051BAFC /* DetailViewController.h */,
-				84DEA97014DA63960051BAFC /* DetailViewController.m */,
-				84DEA97214DA63960051BAFC /* MasterViewController.xib */,
-				84DEA97514DA63960051BAFC /* DetailViewController.xib */,
+				8468935B14DA6758002B093F /* Controllers */,
+				8468935A14DA6740002B093F /* xibs */,
+				8468935C14DA67AF002B093F /* Auxiliary files */,
 				84DEA96114DA63960051BAFC /* Supporting Files */,
 			);
 			path = MicroMaze;
@@ -386,6 +410,7 @@
 				84DEA97C14DA63960051BAFC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

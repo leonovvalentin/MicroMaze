@@ -31,6 +31,7 @@
     self.navigationController = [[[UINavigationController alloc] initWithRootViewController:masterViewController] autorelease];
     self.navigationController.navigationBar.tintColor = [UIColor brownColor];
     self.window.rootViewController = self.navigationController;
+    self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     return YES;
 }

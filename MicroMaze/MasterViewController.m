@@ -11,7 +11,11 @@
 #import "RecordsViewController.h"
 #import "OptionsViewController.h"
 
+CGFloat FREE_FALL_ACCELERATION = 9.81;
+
 @interface MasterViewController()
+
+@property (retain, nonatomic) IBOutlet UILabel *playerNameLabel;
 
 @property (strong, nonatomic) LevelsViewController *levelsViewController;
 @property (strong, nonatomic) RecordsViewController *recordsViewController;
@@ -25,12 +29,15 @@
 @end
 
 @implementation MasterViewController
+@synthesize playerNameLabel = _playerNameLabel;
 
 @synthesize levelsViewController = _levelsViewController, recordsViewController = _recordsViewController, optionsViewController = _optionsViewController;
 @synthesize playerName = _playerName, levelFileNames = _levelFileNames, records = _records;
 
 - (void)dealloc
 {
+    self.playerNameLabel = nil;
+    
     self.levelsViewController = nil;
     self.recordsViewController = nil;
     self.optionsViewController = nil;
@@ -47,7 +54,7 @@
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         self.title = NSLocalizedString(@"Micro Maze", @"Micro Maze");
-        self.playerName = @"Unknown player";
+        self.playerName = @"UnknownPlayer";
 
         // Load levels list
         NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -64,7 +71,7 @@
                                                                      encoding:NSUTF8StringEncoding
                                                                         error:nil];
             NSArray *levelContentArray = [levelContentString componentsSeparatedByString:@"\n"];
-            NSInteger recordsCount = [[levelContentArray objectAtIndex:0] floatValue];
+            CGFloat recordsCount = [[levelContentArray objectAtIndex:0] floatValue];
             NSMutableDictionary *levelRecords = [NSMutableDictionary dictionaryWithCapacity:recordsCount];
             for (NSInteger i = 1; i < 1 + recordsCount; i++)
             {
@@ -89,27 +96,28 @@
 
 - (void)viewDidLoad
 {
+    [super viewDidLoad];
+	// Do any additional setup after loading the view, typically from a nib.
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleAddToRecordsNotification:)
                                                  name:@"addToRecords"
                                                object:nil];
-    [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
 }
 
 - (void)viewDidUnload
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self
-                                                    name:@"addToRecords"
-                                                  object:nil];
     [super viewDidUnload];
     // Release any retained subviews of the main view.
     // e.g. self.myOutlet = nil;
+    [[NSNotificationCenter defaultCenter] removeObserver:self
+                                                    name:@"addToRecords"
+                                                  object:nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {    
     [super viewWillAppear:animated];
+    self.playerNameLabel.text = self.playerName;
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -164,7 +172,29 @@
 
 - (void)handleAddToRecordsNotification:(NSNotification *)notification
 {
+    // Record data
+    NSString *levelFileName = [notification.userInfo valueForKey:@"levelFileName"];
+    CGFloat playTime = [[notification.userInfo valueForKey:@"playTime"] floatValue];
     
+    // Level record update
+    NSMutableDictionary *levelRecords = [self.records valueForKey:levelFileName];
+    [levelRecords setValue:[NSString stringWithFormat:@"%.1f", playTime] forKey:self.playerName];
+    
+    // Write to file
+    NSString *newLevelContentString = [NSString stringWithFormat:@"%d\n%@ %.2f\n", levelRecords.count, self.playerName, playTime];
+    
+    NSString *pathToLevelFile = [[NSBundle mainBundle] pathForResource:levelFileName
+                                                                ofType:nil
+                                                           inDirectory:@"Levels"];
+    
+    newLevelContentString = [newLevelContentString stringByAppendingString:[[NSString stringWithContentsOfFile:pathToLevelFile
+                                                             encoding:NSUTF8StringEncoding
+                                                                error:nil] substringFromIndex:2]];
+    
+    [newLevelContentString writeToFile:pathToLevelFile
+                            atomically:YES
+                              encoding:NSUTF8StringEncoding
+                                 error:nil];
 }
 
 @end

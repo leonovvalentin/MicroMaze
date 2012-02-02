@@ -1,4 +1,4 @@
-//
+
 //  OptionsViewController.h
 //  MicroMaze
 //
@@ -7,10 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <QuartzCore/QuartzCore.h>
 
-@interface OptionsViewController : UIViewController
+@interface OptionsViewController : UIViewController <UITextFieldDelegate>
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil masterViewControlle:(MasterViewController *)masterViewController;
-@property (retain, nonatomic) IBOutlet UITextField *playerName;
 
 @end

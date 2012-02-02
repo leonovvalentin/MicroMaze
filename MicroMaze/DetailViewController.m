@@ -6,13 +6,15 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
+#import "MasterViewController.h" // для FREE_FALL_ACCELERATION ??
 #import "DetailViewController.h"
 #import "Ball.h"
 
+extern CGFloat FREE_FALL_ACCELERATION;
                                                                                     // Почистить константы !!
 extern CGFloat const PIXELS_IN_METER;
 extern CGFloat const REFRESH_TIME_INTERVAL;
-CGFloat const PH_G = 0.98; // free fall acceleration
+//CGFloat const PH_G = 0.98; // free fall acceleration
 CGFloat const TIMER_UPDATE_INTERVAL = 0.2;
 CGFloat const MAX_PLAY_TIME = 99.99;
 NSInteger const WINDOW_WIDTH = 320;
@@ -92,7 +94,7 @@ NSInteger const FINISH_HOLE_SIZE = 60;
         [self.motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue]
                                                  withHandler:^(CMAccelerometerData *accelerometerData, NSError *error) {
                                                      for (Ball *ball in self.balls) {
-                                                         ball.force = VectorMake(ball.mass * PH_G * accelerometerData.acceleration.x, -ball.mass * PH_G * accelerometerData.acceleration.y);
+                                                         ball.force = VectorMake(ball.mass * accelerometerData.acceleration.x, -ball.mass * accelerometerData.acceleration.y);
                                                      }
                                                  }];
         
