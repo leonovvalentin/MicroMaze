@@ -2,12 +2,11 @@
 //  AppDelegate.m
 //  MicroMaze
 //
-//  Created by admin on 02.02.12.
+//  Created by admin on 25.01.12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
 #import "AppDelegate.h"
-
 #import "MasterViewController.h"
 
 @implementation AppDelegate
@@ -17,8 +16,9 @@
 
 - (void)dealloc
 {
-    [_window release];
-    [_navigationController release];
+    self.window = nil;
+    self.navigationController = nil;
+    
     [super dealloc];
 }
 
@@ -29,6 +29,7 @@
 
     MasterViewController *masterViewController = [[[MasterViewController alloc] initWithNibName:@"MasterViewController" bundle:nil] autorelease];
     self.navigationController = [[[UINavigationController alloc] initWithRootViewController:masterViewController] autorelease];
+    self.navigationController.navigationBar.tintColor = [UIColor brownColor];
     self.window.rootViewController = self.navigationController;
     [self.window makeKeyAndVisible];
     return YES;

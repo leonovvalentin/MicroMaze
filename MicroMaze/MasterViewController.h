@@ -2,16 +2,14 @@
 //  MasterViewController.h
 //  MicroMaze
 //
-//  Created by admin on 02.02.12.
+//  Created by admin on 25.01.12.
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
 #import <UIKit/UIKit.h>
 
-@class DetailViewController;
+@interface MasterViewController : UIViewController
 
-@interface MasterViewController : UITableViewController
-
-@property (strong, nonatomic) DetailViewController *detailViewController;
+@property (retain, nonatomic) NSString *playerName;
 
 @end

@@ -17,6 +17,19 @@
 		84DEA97114DA63960051BAFC /* DetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84DEA97014DA63960051BAFC /* DetailViewController.m */; };
 		84DEA97414DA63960051BAFC /* MasterViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84DEA97214DA63960051BAFC /* MasterViewController.xib */; };
 		84DEA97714DA63960051BAFC /* DetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84DEA97514DA63960051BAFC /* DetailViewController.xib */; };
+		84DEA97F14DA63BC0051BAFC /* Images in Resources */ = {isa = PBXBuildFile; fileRef = 84DEA97D14DA63BC0051BAFC /* Images */; };
+		84DEA98014DA63BC0051BAFC /* Levels in Resources */ = {isa = PBXBuildFile; fileRef = 84DEA97E14DA63BC0051BAFC /* Levels */; };
+		84DEA98C14DA641D0051BAFC /* Ball.m in Sources */ = {isa = PBXBuildFile; fileRef = 84DEA98214DA641D0051BAFC /* Ball.m */; };
+		84DEA98D14DA641D0051BAFC /* LevelsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84DEA98414DA641D0051BAFC /* LevelsViewController.m */; };
+		84DEA98E14DA641D0051BAFC /* OptionsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84DEA98614DA641D0051BAFC /* OptionsViewController.m */; };
+		84DEA98F14DA641D0051BAFC /* RecordsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84DEA98814DA641D0051BAFC /* RecordsDetailViewController.m */; };
+		84DEA99014DA641D0051BAFC /* RecordsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 84DEA98A14DA641D0051BAFC /* RecordsViewController.m */; };
+		84DEA99914DA64280051BAFC /* LevelsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84DEA99114DA64280051BAFC /* LevelsViewController.xib */; };
+		84DEA99A14DA64280051BAFC /* OptionsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84DEA99314DA64280051BAFC /* OptionsViewController.xib */; };
+		84DEA99B14DA64280051BAFC /* RecordsDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84DEA99514DA64280051BAFC /* RecordsDetailViewController.xib */; };
+		84DEA99C14DA64280051BAFC /* RecordsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 84DEA99714DA64280051BAFC /* RecordsViewController.xib */; };
+		84DEA99E14DA64410051BAFC /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84DEA99D14DA64410051BAFC /* CoreMotion.framework */; };
+		84DEA9A014DA64480051BAFC /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 84DEA99F14DA64480051BAFC /* QuartzCore.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,18 +37,37 @@
 		84DEA95A14DA63960051BAFC /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		84DEA95C14DA63960051BAFC /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		84DEA95E14DA63960051BAFC /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
-		84DEA96214DA63960051BAFC /* MicroMaze-Info.plist */ = {isa = PBXFileReference; path = "MicroMaze-Info.plist"; sourceTree = "<group>"; };
+		84DEA96214DA63960051BAFC /* MicroMaze-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "MicroMaze-Info.plist"; sourceTree = "<group>"; };
 		84DEA96414DA63960051BAFC /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		84DEA96614DA63960051BAFC /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		84DEA96814DA63960051BAFC /* MicroMaze-Prefix.pch */ = {isa = PBXFileReference; path = "MicroMaze-Prefix.pch"; sourceTree = "<group>"; };
-		84DEA96914DA63960051BAFC /* AppDelegate.h */ = {isa = PBXFileReference; path = AppDelegate.h; sourceTree = "<group>"; };
+		84DEA96814DA63960051BAFC /* MicroMaze-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MicroMaze-Prefix.pch"; sourceTree = "<group>"; };
+		84DEA96914DA63960051BAFC /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		84DEA96A14DA63960051BAFC /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		84DEA96C14DA63960051BAFC /* MasterViewController.h */ = {isa = PBXFileReference; path = MasterViewController.h; sourceTree = "<group>"; };
+		84DEA96C14DA63960051BAFC /* MasterViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MasterViewController.h; sourceTree = "<group>"; };
 		84DEA96D14DA63960051BAFC /* MasterViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MasterViewController.m; sourceTree = "<group>"; };
-		84DEA96F14DA63960051BAFC /* DetailViewController.h */ = {isa = PBXFileReference; path = DetailViewController.h; sourceTree = "<group>"; };
+		84DEA96F14DA63960051BAFC /* DetailViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DetailViewController.h; sourceTree = "<group>"; };
 		84DEA97014DA63960051BAFC /* DetailViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DetailViewController.m; sourceTree = "<group>"; };
 		84DEA97314DA63960051BAFC /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/MasterViewController.xib; sourceTree = "<group>"; };
 		84DEA97614DA63960051BAFC /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/DetailViewController.xib; sourceTree = "<group>"; };
+		84DEA97D14DA63BC0051BAFC /* Images */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Images; sourceTree = "<group>"; };
+		84DEA97E14DA63BC0051BAFC /* Levels */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Levels; sourceTree = "<group>"; };
+		84DEA98114DA641D0051BAFC /* Ball.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Ball.h; sourceTree = "<group>"; };
+		84DEA98214DA641D0051BAFC /* Ball.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Ball.m; sourceTree = "<group>"; };
+		84DEA98314DA641D0051BAFC /* LevelsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LevelsViewController.h; sourceTree = "<group>"; };
+		84DEA98414DA641D0051BAFC /* LevelsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LevelsViewController.m; sourceTree = "<group>"; };
+		84DEA98514DA641D0051BAFC /* OptionsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OptionsViewController.h; sourceTree = "<group>"; };
+		84DEA98614DA641D0051BAFC /* OptionsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OptionsViewController.m; sourceTree = "<group>"; };
+		84DEA98714DA641D0051BAFC /* RecordsDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecordsDetailViewController.h; sourceTree = "<group>"; };
+		84DEA98814DA641D0051BAFC /* RecordsDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecordsDetailViewController.m; sourceTree = "<group>"; };
+		84DEA98914DA641D0051BAFC /* RecordsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RecordsViewController.h; sourceTree = "<group>"; };
+		84DEA98A14DA641D0051BAFC /* RecordsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RecordsViewController.m; sourceTree = "<group>"; };
+		84DEA98B14DA641D0051BAFC /* Vector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Vector.h; sourceTree = "<group>"; };
+		84DEA99214DA64280051BAFC /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/LevelsViewController.xib; sourceTree = "<group>"; };
+		84DEA99414DA64280051BAFC /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/OptionsViewController.xib; sourceTree = "<group>"; };
+		84DEA99614DA64280051BAFC /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/RecordsDetailViewController.xib; sourceTree = "<group>"; };
+		84DEA99814DA64280051BAFC /* en */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = en; path = en.lproj/RecordsViewController.xib; sourceTree = "<group>"; };
+		84DEA99D14DA64410051BAFC /* CoreMotion.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMotion.framework; path = System/Library/Frameworks/CoreMotion.framework; sourceTree = SDKROOT; };
+		84DEA99F14DA64480051BAFC /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -43,6 +75,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				84DEA9A014DA64480051BAFC /* QuartzCore.framework in Frameworks */,
+				84DEA99E14DA64410051BAFC /* CoreMotion.framework in Frameworks */,
 				84DEA95B14DA63960051BAFC /* UIKit.framework in Frameworks */,
 				84DEA95D14DA63960051BAFC /* Foundation.framework in Frameworks */,
 				84DEA95F14DA63960051BAFC /* CoreGraphics.framework in Frameworks */,
@@ -55,6 +89,10 @@
 		84DEA94B14DA63960051BAFC = {
 			isa = PBXGroup;
 			children = (
+				84DEA99F14DA64480051BAFC /* QuartzCore.framework */,
+				84DEA99D14DA64410051BAFC /* CoreMotion.framework */,
+				84DEA97D14DA63BC0051BAFC /* Images */,
+				84DEA97E14DA63BC0051BAFC /* Levels */,
 				84DEA96014DA63960051BAFC /* MicroMaze */,
 				84DEA95914DA63960051BAFC /* Frameworks */,
 				84DEA95714DA63960051BAFC /* Products */,
@@ -82,6 +120,21 @@
 		84DEA96014DA63960051BAFC /* MicroMaze */ = {
 			isa = PBXGroup;
 			children = (
+				84DEA99114DA64280051BAFC /* LevelsViewController.xib */,
+				84DEA99314DA64280051BAFC /* OptionsViewController.xib */,
+				84DEA99514DA64280051BAFC /* RecordsDetailViewController.xib */,
+				84DEA99714DA64280051BAFC /* RecordsViewController.xib */,
+				84DEA98114DA641D0051BAFC /* Ball.h */,
+				84DEA98214DA641D0051BAFC /* Ball.m */,
+				84DEA98314DA641D0051BAFC /* LevelsViewController.h */,
+				84DEA98414DA641D0051BAFC /* LevelsViewController.m */,
+				84DEA98514DA641D0051BAFC /* OptionsViewController.h */,
+				84DEA98614DA641D0051BAFC /* OptionsViewController.m */,
+				84DEA98714DA641D0051BAFC /* RecordsDetailViewController.h */,
+				84DEA98814DA641D0051BAFC /* RecordsDetailViewController.m */,
+				84DEA98914DA641D0051BAFC /* RecordsViewController.h */,
+				84DEA98A14DA641D0051BAFC /* RecordsViewController.m */,
+				84DEA98B14DA641D0051BAFC /* Vector.h */,
 				84DEA96914DA63960051BAFC /* AppDelegate.h */,
 				84DEA96A14DA63960051BAFC /* AppDelegate.m */,
 				84DEA96C14DA63960051BAFC /* MasterViewController.h */,
@@ -159,6 +212,12 @@
 				84DEA96514DA63960051BAFC /* InfoPlist.strings in Resources */,
 				84DEA97414DA63960051BAFC /* MasterViewController.xib in Resources */,
 				84DEA97714DA63960051BAFC /* DetailViewController.xib in Resources */,
+				84DEA97F14DA63BC0051BAFC /* Images in Resources */,
+				84DEA98014DA63BC0051BAFC /* Levels in Resources */,
+				84DEA99914DA64280051BAFC /* LevelsViewController.xib in Resources */,
+				84DEA99A14DA64280051BAFC /* OptionsViewController.xib in Resources */,
+				84DEA99B14DA64280051BAFC /* RecordsDetailViewController.xib in Resources */,
+				84DEA99C14DA64280051BAFC /* RecordsViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -173,6 +232,11 @@
 				84DEA96B14DA63960051BAFC /* AppDelegate.m in Sources */,
 				84DEA96E14DA63960051BAFC /* MasterViewController.m in Sources */,
 				84DEA97114DA63960051BAFC /* DetailViewController.m in Sources */,
+				84DEA98C14DA641D0051BAFC /* Ball.m in Sources */,
+				84DEA98D14DA641D0051BAFC /* LevelsViewController.m in Sources */,
+				84DEA98E14DA641D0051BAFC /* OptionsViewController.m in Sources */,
+				84DEA98F14DA641D0051BAFC /* RecordsDetailViewController.m in Sources */,
+				84DEA99014DA641D0051BAFC /* RecordsViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -201,6 +265,38 @@
 				84DEA97614DA63960051BAFC /* en */,
 			);
 			name = DetailViewController.xib;
+			sourceTree = "<group>";
+		};
+		84DEA99114DA64280051BAFC /* LevelsViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				84DEA99214DA64280051BAFC /* en */,
+			);
+			name = LevelsViewController.xib;
+			sourceTree = "<group>";
+		};
+		84DEA99314DA64280051BAFC /* OptionsViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				84DEA99414DA64280051BAFC /* en */,
+			);
+			name = OptionsViewController.xib;
+			sourceTree = "<group>";
+		};
+		84DEA99514DA64280051BAFC /* RecordsDetailViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				84DEA99614DA64280051BAFC /* en */,
+			);
+			name = RecordsDetailViewController.xib;
+			sourceTree = "<group>";
+		};
+		84DEA99714DA64280051BAFC /* RecordsViewController.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				84DEA99814DA64280051BAFC /* en */,
+			);
+			name = RecordsViewController.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
