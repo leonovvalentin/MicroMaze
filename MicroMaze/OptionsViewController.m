@@ -92,11 +92,11 @@ static CGFloat _freeFallAcceleration;
 + (void) setFreeFallAcceleration:(CGFloat)newFreeFallAcceleration
 {
     if (newFreeFallAcceleration > 9.82) {
-        [[[UIAlertView alloc] initWithTitle:@"Incorrect value"
+        [[[[UIAlertView alloc] initWithTitle:@"Incorrect value"
                                     message:@"Sorry, it's too big acceleration"
                                    delegate:self
                           cancelButtonTitle:@"Ok"
-                          otherButtonTitles:nil, nil] show];
+                          otherButtonTitles:nil, nil] autorelease] show];
     }
     else
     {
