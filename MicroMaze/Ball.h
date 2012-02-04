@@ -17,8 +17,10 @@
 @property (nonatomic) struct Vector force;
 @property (readonly, nonatomic) CGFloat mass;
 
-- (id) initWithMass:(CGFloat)mass viewController:(DetailViewController *)viewController initialPosition:(CGPoint)initialPosition;
+- (id) initWithMass:(CGFloat)mass initialPosition:(CGPoint)initialPosition;
 - (void) toInitialState;
-- (void) start;
+- (void) startWithBounds:(NSArray *)bounds Holes:(NSArray *)holes FinishHoles:(NSArray *)finishHoles;
+
++ (CGFloat) getPixelsInMeter;
 
 @end

@@ -6,33 +6,25 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
-#import "MasterViewController.h" // для FREE_FALL_ACCELERATION ??
 #import "DetailViewController.h"
+#import "OptionsViewController.h"
 #import "Ball.h"
-
-extern CGFloat FREE_FALL_ACCELERATION;
-                                                                                    // Почистить константы !!
-extern CGFloat const PIXELS_IN_METER;
-extern CGFloat const REFRESH_TIME_INTERVAL;
-//CGFloat const PH_G = 0.98; // free fall acceleration
-CGFloat const TIMER_UPDATE_INTERVAL = 0.2;
-CGFloat const MAX_PLAY_TIME = 99.99;
-NSInteger const WINDOW_WIDTH = 320;
-NSInteger const WINDOW_HIGHT = 416;
-NSInteger const BALL_SIZE = 40;
-NSInteger const HOLE_SIZE = 50;
-NSInteger const BOUNDS_SIZE = 10;
-NSInteger const FINISH_HOLE_SIZE = 60;
 
 @interface DetailViewController ()
 
 @property (retain, nonatomic) NSString *levelFileName;
+
+@property(retain, nonatomic) NSMutableArray *balls;
+@property(retain, nonatomic) NSMutableArray *holes;
+@property(retain, nonatomic) NSMutableArray *finishHoles;
+@property(retain, nonatomic) NSMutableArray *bounds;
 
 @property(retain, nonatomic) CMMotionManager *motionManager;
 
 @property(retain, nonatomic) NSTimer *timer;
 @property(nonatomic) CGFloat playTime;
 @property (retain, nonatomic) IBOutlet UITextField *timerTextField;
+@property (retain, nonatomic) IBOutlet UITextField *recordTimeTextField;
 
 - (void) loadLevel;
 
@@ -49,28 +41,91 @@ NSInteger const FINISH_HOLE_SIZE = 60;
 
 - (void)addToRecordsNotificationForPlayTime:(CGFloat)playTime;
 
++ (CGFloat) getFreeFallAccelerationReal;
+
 @end
 
 @implementation DetailViewController
 
+#pragma statics
+
+static CGFloat const _ballSize = 40;
+static CGFloat const _holeSize = 50;
+static CGFloat const _finishHoleSize = 60;
+static CGFloat const _boundSize = 10;
+
+static CGFloat const _windowWidth = 320;
+static CGFloat const _windowHeight = 416;
+static CGFloat const _maxPlayTime = 99.99;
+static CGFloat const _timerUpdateInterval = 0.2;
+static CGFloat const _freeFallAccelerationReal = 9.81;
+
++ (CGFloat) getBallSize
+{
+    return _ballSize;
+}
+
++ (CGFloat) getHoleSize
+{
+    return _holeSize;
+}
+
++ (CGFloat) getFinishHoleSize
+{
+    return _finishHoleSize;
+}
+
++ (CGFloat) getBoundSize
+{
+    return _boundSize;
+}
+
++ (CGFloat) getWindowWidth
+{
+    return _windowWidth;
+}
+
++ (CGFloat) getWindowHeight
+{
+    return _windowHeight;
+}
+
++ (CGFloat) getMaxPlayTime
+{
+    return _maxPlayTime;
+}
+
++ (CGFloat) getTimerUpdateInterval
+{
+    return _timerUpdateInterval;
+}
+
++ (CGFloat) getFreeFallAccelerationReal
+{
+    return _freeFallAccelerationReal;
+}
+
+#pragma non statics
+
 @synthesize balls = _balls, holes = _holes, finishHoles = _finishHoles, bounds = _bounds;
 @synthesize levelFileName = _levelFileName;
 @synthesize motionManager = _motionManager;
-@synthesize timer = _timer, playTime = _playTime, timerTextField = _timerTextField;
+@synthesize timer = _timer, playTime = _playTime, timerTextField = _timerTextField, recordTimeTextField = _recordTimeTextField;;
 
 - (void)dealloc
 {
+    self.levelFileName = nil;
+    
     self.balls = nil;
     self.holes = nil;
     self.bounds = nil;
     self.finishHoles = nil;
     
-    self.levelFileName = nil;
-    
     self.motionManager = nil;
     
     self.timer = nil;
     self.timerTextField = nil;
+    self.recordTimeTextField = nil;
     
     [super dealloc];
 }
@@ -82,6 +137,7 @@ NSInteger const FINISH_HOLE_SIZE = 60;
         self.view.layer.contents = (id)[UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Background"
                                                                                                         ofType:@"png"
                                                                                                    inDirectory:@"Images"]].CGImage;
+        
         self.levelFileName = levelFileName;
         
         NSString *levelName = [self.levelFileName substringToIndex:self.levelFileName.length - 4];
@@ -89,15 +145,7 @@ NSInteger const FINISH_HOLE_SIZE = 60;
         
         [self loadLevel];
         
-        // Accelerometer
         self.motionManager = [[[CMMotionManager alloc] init] autorelease];
-        [self.motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue]
-                                                 withHandler:^(CMAccelerometerData *accelerometerData, NSError *error) {
-                                                     for (Ball *ball in self.balls) {
-                                                         ball.force = VectorMake(ball.mass * accelerometerData.acceleration.x, -ball.mass * accelerometerData.acceleration.y);
-                                                     }
-                                                 }];
-        
         self.playTime = 0.0;
     }
     
@@ -108,7 +156,7 @@ NSInteger const FINISH_HOLE_SIZE = 60;
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
     UITouch *touch = [touches anyObject];
-    Vector vector = VectorMake(([touch locationInView:self.view].x - self.view.center.x)/PIXELS_IN_METER, ([touch locationInView:self.view].y - self.view.center.y)/PIXELS_IN_METER);
+    Vector vector = VectorMake(([touch locationInView:self.view].x - self.view.center.x)/[Ball getPixelsInMeter], ([touch locationInView:self.view].y - self.view.center.y)/[Ball getPixelsInMeter]);
     
     for (Ball *ball in self.balls) {
         ball.force = VectorMake(ball.mass * vector.x, ball.mass * vector.y);
@@ -198,28 +246,27 @@ NSInteger const FINISH_HOLE_SIZE = 60;
 - (NSArray *) leftTopRightBottomBounds
 {
     // Left bound
-    CALayer *leftBound = [self boundWithXCoordinate:BOUNDS_SIZE/2
-                                        yCoordinate:BOUNDS_SIZE
-                                             length:WINDOW_HIGHT - 2*BOUNDS_SIZE
+    CALayer *leftBound = [self boundWithXCoordinate:[DetailViewController getBoundSize]/2
+                                        yCoordinate:[DetailViewController getBoundSize]
+                                             length:[DetailViewController getWindowHeight] - 2*[DetailViewController getBoundSize]
                                          horisontal:NO];
     leftBound.zPosition = 1;
     // Top bound
-    CALayer *topBound = [self boundWithXCoordinate:BOUNDS_SIZE
-                                       yCoordinate:BOUNDS_SIZE/2
-                                            length:WINDOW_WIDTH - 2*BOUNDS_SIZE
+    CALayer *topBound = [self boundWithXCoordinate:[DetailViewController getBoundSize]
+                                       yCoordinate:[DetailViewController getBoundSize]/2
+                                            length:[DetailViewController getWindowWidth] - 2*[DetailViewController getBoundSize]
                                         horisontal:YES];
     topBound.zPosition = 1;
     // Right bound
-    CALayer *rightBound = [self boundWithXCoordinate:WINDOW_WIDTH - BOUNDS_SIZE/2
-                                         yCoordinate:BOUNDS_SIZE
-                                              length:WINDOW_HIGHT - 2*BOUNDS_SIZE
+    CALayer *rightBound = [self boundWithXCoordinate:[DetailViewController getWindowWidth] - [DetailViewController getBoundSize]/2
+                                         yCoordinate:[DetailViewController getBoundSize]
+                                              length:[DetailViewController getWindowHeight] - 2*[DetailViewController getBoundSize]
                                           horisontal:NO];
     rightBound.zPosition = 1;
     // Bottom bound
-    CALayer *bottomBound = [self boundWithXCoordinate:BOUNDS_SIZE
-                                          yCoordinate:WINDOW_HIGHT - BOUNDS_SIZE/2
-                                               length:WINDOW_WIDTH - 2*BOUNDS_SIZE
-//                                                 length:BOUNDS_SIZE //debug
+    CALayer *bottomBound = [self boundWithXCoordinate:[DetailViewController getBoundSize]
+                                          yCoordinate:[DetailViewController getWindowHeight] - [DetailViewController getBoundSize]/2
+                                               length:[DetailViewController getWindowWidth] - 2*[DetailViewController getBoundSize]
                                            horisontal:YES];
     bottomBound.zPosition = 1;
     return [[[NSArray alloc] initWithObjects:leftBound, topBound, rightBound, bottomBound, nil] autorelease];
@@ -233,11 +280,11 @@ NSInteger const FINISH_HOLE_SIZE = 60;
                                                                                       inDirectory:@"Images"]] CGImage];
     if (horisontal)
     {
-        bound.frame = CGRectMake(xCoordinate, yCoordinate - BOUNDS_SIZE/2, length, BOUNDS_SIZE);
+        bound.frame = CGRectMake(xCoordinate, yCoordinate - [DetailViewController getBoundSize]/2, length, [DetailViewController getBoundSize]);
     }
     else
     {
-        bound.frame = CGRectMake(xCoordinate - BOUNDS_SIZE/2, yCoordinate, BOUNDS_SIZE, length);
+        bound.frame = CGRectMake(xCoordinate - [DetailViewController getBoundSize]/2, yCoordinate, [DetailViewController getBoundSize], length);
     }
     
     bound.shadowOpacity = 1.0;
@@ -251,7 +298,7 @@ NSInteger const FINISH_HOLE_SIZE = 60;
     finishHole.contents = (id)[[UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"FinishHole1" 
                                                                                                 ofType:@"gif"
                                                                                            inDirectory:@"Images"]] CGImage];
-    finishHole.frame = CGRectMake(xCoordinate - FINISH_HOLE_SIZE/2, yCoordinate - FINISH_HOLE_SIZE/2, FINISH_HOLE_SIZE, FINISH_HOLE_SIZE);
+    finishHole.frame = CGRectMake(xCoordinate - [DetailViewController getFinishHoleSize]/2, yCoordinate - [DetailViewController getFinishHoleSize]/2, [DetailViewController getFinishHoleSize], [DetailViewController getFinishHoleSize]);
     finishHole.zPosition = -1;
     
     return finishHole;
@@ -263,11 +310,11 @@ NSInteger const FINISH_HOLE_SIZE = 60;
     holeUp.contents = (id)[[UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Hole" 
                                                                                             ofType:@"gif"
                                                                                        inDirectory:@"Images"]] CGImage];
-    holeUp.frame = CGRectMake(xCoordinate - HOLE_SIZE/2, yCoordinate - HOLE_SIZE/2, HOLE_SIZE, HOLE_SIZE);
+    holeUp.frame = CGRectMake(xCoordinate - [DetailViewController getHoleSize]/2, yCoordinate - [DetailViewController getHoleSize]/2, [DetailViewController getHoleSize], [DetailViewController getHoleSize]);
     holeUp.shadowOpacity = 0.7;
     holeUp.shadowRadius = 3;
     holeUp.shadowOffset = CGSizeMake(-4, -4);
-    holeUp.cornerRadius = HOLE_SIZE/2;
+    holeUp.cornerRadius = [DetailViewController getHoleSize]/2;
     holeUp.masksToBounds = YES;
     holeUp.zPosition = -1;
     
@@ -275,9 +322,9 @@ NSInteger const FINISH_HOLE_SIZE = 60;
     holeUnder.contents = (id)[[UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"HoleUnder" 
                                                                                                ofType:@"gif"
                                                                                           inDirectory:@"Images"]] CGImage];
-    holeUnder.frame = CGRectMake(xCoordinate - HOLE_SIZE/2, yCoordinate - HOLE_SIZE/2, HOLE_SIZE, HOLE_SIZE);
+    holeUnder.frame = CGRectMake(xCoordinate - [DetailViewController getHoleSize]/2, yCoordinate - [DetailViewController getHoleSize]/2, [DetailViewController getHoleSize], [DetailViewController getHoleSize]);
     holeUnder.zPosition = -3;
-    holeUnder.cornerRadius = HOLE_SIZE/2;
+    holeUnder.cornerRadius = [DetailViewController getHoleSize]/2;
     holeUnder.masksToBounds = YES;
     
     return [[[NSArray alloc] initWithObjects:holeUp, holeUnder, nil] autorelease];
@@ -285,11 +332,11 @@ NSInteger const FINISH_HOLE_SIZE = 60;
 
 - (Ball *) ballWithMass:(CGFloat)mass XCoordinate:(NSInteger)xCoordinate yCoordinate:(NSInteger)yCoordinate
 {
-    Ball *ball = [[[Ball alloc] initWithMass:mass viewController:self initialPosition:(CGPointMake(xCoordinate, yCoordinate))] autorelease];
+    Ball *ball = [[[Ball alloc] initWithMass:mass initialPosition:(CGPointMake(xCoordinate, yCoordinate))] autorelease];
     ball.contents = (id)[[UIImage imageWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"Ball" 
                                                                                           ofType:@"gif"
                                                                                      inDirectory:@"Images"]] CGImage];
-    ball.frame = CGRectMake(xCoordinate - BALL_SIZE/2, yCoordinate - BALL_SIZE/2, BALL_SIZE, BALL_SIZE);
+    ball.frame = CGRectMake(xCoordinate - [DetailViewController getBallSize]/2, yCoordinate - [DetailViewController getBallSize]/2, [DetailViewController getBallSize], [DetailViewController getBallSize]);
     ball.shadowOpacity = 0.5;
     ball.shadowRadius = 3;
     ball.shadowOffset = CGSizeMake(-2, -2);
@@ -303,7 +350,7 @@ NSInteger const FINISH_HOLE_SIZE = 60;
     // Release any cached data, images, etc that aren't in use.
 }
 
-#pragma mark - View lifecycle
+#pragma view lifecycle
 
 - (void)viewDidLoad
 {
@@ -335,31 +382,50 @@ NSInteger const FINISH_HOLE_SIZE = 60;
 {
     for (Ball *ball in self.balls)
     {
-        [ball start];
+        [ball startWithBounds:self.bounds Holes:self.holes FinishHoles:self.finishHoles];
     }
     
     // Timer
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:TIMER_UPDATE_INTERVAL
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:[DetailViewController getTimerUpdateInterval]
                                                   target:self
                                                 selector:@selector(updateTimerTextField)
                                                 userInfo:nil
                                                  repeats:YES];
+    
+    // Accelerometer
+    [self.motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue]
+                                             withHandler:^(CMAccelerometerData *accelerometerData, NSError *error) {
+                                                 for (Ball *ball in self.balls) {
+                                                     CGFloat aX = accelerometerData.acceleration.x * [OptionsViewController getFreeFallAcceleration] / [DetailViewController getFreeFallAccelerationReal];
+                                                     CGFloat aY = -accelerometerData.acceleration.y * [OptionsViewController getFreeFallAcceleration] / [DetailViewController getFreeFallAccelerationReal];
+//                                                     NSLog(@"%f, %f", aX, aY);
+                                                     ball.force = VectorMake(ball.mass * aX, ball.mass * aY);
+                                                 }
+                                             }];
+
+    
     [super viewDidAppear:animated];
 }
 
 - (void) updateTimerTextField
 {
-    self.playTime += TIMER_UPDATE_INTERVAL;
+    self.playTime += [DetailViewController getTimerUpdateInterval];
     
-    if (self.playTime > MAX_PLAY_TIME)
+    if (self.playTime > [DetailViewController getMaxPlayTime])
     {
+        for (Ball *ball in self.balls)
+        {
+            [ball toInitialState];
+        }
+        
         [self.timer invalidate];
-        UIAlertView *alertOfBallInTheHole = [[[UIAlertView alloc] initWithTitle:@"You are losеr"
+        
+        UIAlertView *alertOfTooLong = [[[UIAlertView alloc] initWithTitle:@"You are losеr"
                                                                         message:@"It's too long..."
                                                                        delegate:self
                                                               cancelButtonTitle:@"Ok"
                                                               otherButtonTitles:nil, nil] autorelease];
-        [alertOfBallInTheHole show];
+        [alertOfTooLong show];
     }
     
     self.timerTextField.text = [NSString stringWithFormat:@"%0.2f", self.playTime];
@@ -367,6 +433,7 @@ NSInteger const FINISH_HOLE_SIZE = 60;
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    [self.motionManager stopAccelerometerUpdates];
 	[super viewWillDisappear:animated];
 }
 
@@ -393,6 +460,27 @@ NSInteger const FINISH_HOLE_SIZE = 60;
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
+#pragma AlertViewDelegate
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (alertView.title == @"You are losеr")
+    {
+        [self.navigationController popViewControllerAnimated:YES];
+    }
+    
+    if (alertView.title == @"You are winner!")
+    {
+        if (buttonIndex == 0) {
+            [self addToRecordsNotificationForPlayTime:self.playTime];
+        }
+        
+        [self.navigationController popViewControllerAnimated:YES];
+    }
+}
+
+#pragma handling notifications
+
 - (void) handleBallInTheHoleNotification:(NSNotification *)notification
 {
     [self.timer invalidate];
@@ -416,22 +504,7 @@ NSInteger const FINISH_HOLE_SIZE = 60;
     [alertOfBallInTheFinishHole show];
 }
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if (alertView.title == @"You are losеr")
-    {
-        [self.navigationController popViewControllerAnimated:YES];
-    }
-    
-    if (alertView.title == @"You are winner!")
-    {
-        if (buttonIndex == 0) {
-            [self addToRecordsNotificationForPlayTime:self.playTime];
-        }
-        
-        [self.navigationController popViewControllerAnimated:YES];
-    }
-}
+#pragma notifications
 
 - (void)addToRecordsNotificationForPlayTime:(CGFloat)playTime
 {

@@ -8,15 +8,8 @@
 
 #import "Ball.h"
 
-CGFloat const PIXELS_IN_METER = 6749.25;
-CGFloat const REFRESH_TIME_INTERVAL = 0.05;
-CGFloat const PERMISSIBLE_XY_DIFFERENCE = 0.0;
-CGFloat const COEF = 0.2;
-CGFloat const BALL_RELATIVE_SIZE_IN_HOLLE = 0.7;
-
 @interface Ball()
 
-@property (strong, nonatomic) DetailViewController *viewController;
 @property (nonatomic) CGPoint initialPosition;
 
 @property (nonatomic) Vector velocity;
@@ -28,7 +21,7 @@ CGFloat const BALL_RELATIVE_SIZE_IN_HOLLE = 0.7;
 - (void) fallInTheFinishHole:(CALayer *)finishHole;
 //- (void) bumpWithBall:(Ball *)ball;
 
-- (void)refreshPosition;
+- (void)refreshPositionWithTimer:(NSTimer *)timer;
 
 - (Vector) intersectionVectorWithRect:(CGRect)rect;
 
@@ -39,23 +32,43 @@ CGFloat const BALL_RELATIVE_SIZE_IN_HOLLE = 0.7;
 
 @implementation Ball
 
-@synthesize viewController = _viewController, initialPosition = _initialPosition;
+#pragma statics
+
+static CGFloat const _pixelsInMeter = 6749.25;
+static CGFloat const _refreshTimeInterval = 0.05/*0.01*/;
+static CGFloat const _velocityCoefficientAfterImpact = 0.2;
+
++ (CGFloat) getPixelsInMeter
+{
+    return _pixelsInMeter;
+}
+
++ (CGFloat) getRefreshTimeInterval
+{
+    return _refreshTimeInterval;
+}
+
++ (CGFloat) getVelocityCoefficientAfterImpact
+{
+    return _velocityCoefficientAfterImpact;
+}
+
+#pragma non statics
+
+@synthesize initialPosition = _initialPosition;
 @synthesize redrawTimer = _redrawTimer;
 @synthesize force = _force, mass = _mass, velocity = _velocity;;
 
 - (void)dealloc
 {
     self.redrawTimer = nil;
-    self.viewController = nil;
-    
     [super dealloc];
 }
 
-- (id) initWithMass:(CGFloat)mass viewController:(DetailViewController *)viewController initialPosition:(CGPoint)initialPosition
+- (id) initWithMass:(CGFloat)mass initialPosition:(CGPoint)initialPosition
 {
     self = [super init];
     self.velocity = VectorMake(0, 0);
-    self.viewController = viewController;
     _mass = mass;
     self.initialPosition = initialPosition;
     self.zPosition = 0;
@@ -72,50 +85,26 @@ CGFloat const BALL_RELATIVE_SIZE_IN_HOLLE = 0.7;
     self.zPosition = 0;
 }
 
-- (void) start
+- (void) startWithBounds:(NSArray *)bounds Holes:(NSArray *)holes FinishHoles:(NSArray *)finishHoles
 {
-    self.redrawTimer = [NSTimer scheduledTimerWithTimeInterval:REFRESH_TIME_INTERVAL
+    NSDictionary *boundsHolesFinishHolesDictionary = [NSDictionary dictionaryWithObjects:[NSArray arrayWithObjects:bounds, holes, finishHoles, nil]
+                                                                                 forKeys:[NSArray arrayWithObjects:@"Bounds", @"Holes", @"FinishHoles", nil]];
+
+    self.redrawTimer = [NSTimer scheduledTimerWithTimeInterval:[Ball getRefreshTimeInterval]
                                                         target:self
-                                                      selector:@selector(refreshPosition)
-                                                      userInfo:nil
+                                                      selector:@selector(refreshPositionWithTimer:)
+                                                      userInfo:boundsHolesFinishHolesDictionary
                                                        repeats:YES];
 }
 
-- (void) reboundFromBound:(CALayer *)bound
+- (void)refreshPositionWithTimer:(NSTimer *)timer
 {
-    CGRect intersectionRect = CGRectIntersection(self.frame, bound.frame);
-    Vector intersectionVector = [self intersectionVectorWithRect:intersectionRect];
-    if (vectorLength(intersectionVector) > 0)
-    {
-        [CATransaction begin];
-        [CATransaction setValue:(id)kCFBooleanTrue
-                         forKey:kCATransactionDisableActions];
-            self.position = CGPointMake(self.position.x - intersectionVector.x, self.position.y - intersectionVector.y);
-        [CATransaction commit];
-        
-        CGFloat xyDifference  = (absOfNumber(intersectionVector.x) - absOfNumber(intersectionVector.y));
-        if (absOfNumber(xyDifference) <= PERMISSIBLE_XY_DIFFERENCE) // Square intersection
-        {
-            self.velocity = VectorMake(-self.velocity.x * COEF, -self.velocity.y * COEF);
-        }
-
-        else if (xyDifference < 0) // Horisintal intersection
-        {
-                self.velocity = VectorMake(self.velocity.x, -self.velocity.y * COEF);
-        }
-        else if (xyDifference > 0) // Vertical intersection
-        {
-                self.velocity = VectorMake(-self.velocity.x * COEF, self.velocity.y);
-        }
-    }
-}
-
-- (void)refreshPosition
-{
-    self.velocity = VectorMake(self.velocity.x + self.force.x * REFRESH_TIME_INTERVAL / self.mass, self.velocity.y + self.force.y * REFRESH_TIME_INTERVAL / self.mass);
+    NSDictionary *boundsHolesFinishHolesDictionary = timer.userInfo;
     
-    CGFloat xPosition = self.position.x + self.velocity.x * PIXELS_IN_METER * REFRESH_TIME_INTERVAL;
-    CGFloat yPosition = self.position.y + self.velocity.y * PIXELS_IN_METER * REFRESH_TIME_INTERVAL;
+    self.velocity = VectorMake(self.velocity.x + self.force.x * [Ball getRefreshTimeInterval] / self.mass, self.velocity.y + self.force.y * [Ball getRefreshTimeInterval] / self.mass);
+
+    CGFloat xPosition = self.position.x + self.velocity.x * [Ball getPixelsInMeter] * [Ball getRefreshTimeInterval];
+    CGFloat yPosition = self.position.y + self.velocity.y * [Ball getPixelsInMeter] * [Ball getRefreshTimeInterval];
 
     [CATransaction begin];
         [CATransaction setValue:(id)kCFBooleanTrue
@@ -135,19 +124,19 @@ CGFloat const BALL_RELATIVE_SIZE_IN_HOLLE = 0.7;
 //    }
     
     // Bound intersection
-    for (CALayer *bound in self.viewController.bounds)
+    for (CALayer *bound in [boundsHolesFinishHolesDictionary valueForKey:@"Bounds"])
     {
         [self reboundFromBound:bound];
     }
     
     // Hole intersection
-    for (CALayer *hole in self.viewController.holes)
+    for (CALayer *hole in [boundsHolesFinishHolesDictionary valueForKey:@"Holes"])
     {
         [self fallInTheHole:hole];
     }
-    
+   
     // Finish hole intersection
-    for (CALayer *finishHole in self.viewController.finishHoles)
+    for (CALayer *finishHole in [boundsHolesFinishHolesDictionary valueForKey:@"FinishHoles"])
     {
         [self fallInTheFinishHole:finishHole];
     }
@@ -215,6 +204,35 @@ CGFloat const BALL_RELATIVE_SIZE_IN_HOLLE = 0.7;
     }
 }
 
+- (void) reboundFromBound:(CALayer *)bound
+{
+    CGRect intersectionRect = CGRectIntersection(self.frame, bound.frame);
+    Vector intersectionVector = [self intersectionVectorWithRect:intersectionRect];
+    if (vectorLength(intersectionVector) > 0)
+    {
+        [CATransaction begin];
+        [CATransaction setValue:(id)kCFBooleanTrue
+                         forKey:kCATransactionDisableActions];
+        self.position = CGPointMake(self.position.x - intersectionVector.x, self.position.y - intersectionVector.y);
+        [CATransaction commit];
+        
+        CGFloat xyDifference  = (absOfNumber(intersectionVector.x) - absOfNumber(intersectionVector.y));
+        if (absOfNumber(xyDifference) == 0) // Square intersection
+        {
+            self.velocity = VectorMake(-self.velocity.x * [Ball getVelocityCoefficientAfterImpact], -self.velocity.y * [Ball getVelocityCoefficientAfterImpact]);
+        }
+        
+        else if (xyDifference < 0) // Horisintal intersection
+        {
+            self.velocity = VectorMake(self.velocity.x, -self.velocity.y * [Ball getVelocityCoefficientAfterImpact]);
+        }
+        else if (xyDifference > 0) // Vertical intersection
+        {
+            self.velocity = VectorMake(-self.velocity.x * [Ball getVelocityCoefficientAfterImpact], self.velocity.y);
+        }
+    }
+}
+
 - (Vector) intersectionVectorWithRect:(CGRect)rect
 {
     if (rect.size.width * rect.size.height <= 0) {
@@ -244,6 +262,8 @@ CGFloat const BALL_RELATIVE_SIZE_IN_HOLLE = 0.7;
     return VectorMake(vectorFromBallCenterToRadius.x - vectorFromBallCenterToMinPoint.x,
                       vectorFromBallCenterToRadius.y - vectorFromBallCenterToMinPoint.y);
 }
+
+#pragma Notifications
 
 - (void) ballInTheHoleNotification
 {

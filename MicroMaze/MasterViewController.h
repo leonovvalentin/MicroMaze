@@ -10,6 +10,7 @@
 
 @interface MasterViewController : UIViewController
 
-@property (retain, nonatomic) NSString *playerName;
++ (NSArray *) getLevelFileNames;
++ (NSMutableDictionary *) getRecords;
 
 @end

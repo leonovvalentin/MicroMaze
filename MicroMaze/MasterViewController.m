@@ -11,8 +11,6 @@
 #import "RecordsViewController.h"
 #import "OptionsViewController.h"
 
-CGFloat FREE_FALL_ACCELERATION = 9.81;
-
 @interface MasterViewController()
 
 @property (retain, nonatomic) IBOutlet UILabel *playerNameLabel;
@@ -21,18 +19,45 @@ CGFloat FREE_FALL_ACCELERATION = 9.81;
 @property (strong, nonatomic) RecordsViewController *recordsViewController;
 @property (strong, nonatomic) OptionsViewController *optionsViewController;
 
-@property (retain, nonatomic) NSArray *levelFileNames;
-@property (retain, nonatomic) NSMutableDictionary *records;
-
 - (void)handleAddToRecordsNotification:(NSNotification *)notification;
 
 @end
 
 @implementation MasterViewController
-@synthesize playerNameLabel = _playerNameLabel;
 
+#pragma statics
+
+static NSArray *_levelFileNames;
+static NSMutableDictionary *_records;
+
++ (NSArray *) getLevelFileNames
+{
+    return _levelFileNames;
+}
+
++ (void) setLevelFileNames:(NSArray *)newLevelFileNames
+{
+    [newLevelFileNames retain];
+    [_levelFileNames release];
+    _levelFileNames = newLevelFileNames;
+}
+
++ (NSMutableDictionary *)getRecords
+{
+    return _records;
+}
+
++ (void) setRecords:(NSMutableDictionary *)newRecords
+{
+    [newRecords retain];
+    [_records release];
+    _records = newRecords;
+}
+
+#pragma non statics
+
+@synthesize playerNameLabel = _playerNameLabel;
 @synthesize levelsViewController = _levelsViewController, recordsViewController = _recordsViewController, optionsViewController = _optionsViewController;
-@synthesize playerName = _playerName, levelFileNames = _levelFileNames, records = _records;
 
 - (void)dealloc
 {
@@ -42,10 +67,6 @@ CGFloat FREE_FALL_ACCELERATION = 9.81;
     self.recordsViewController = nil;
     self.optionsViewController = nil;
     
-    self.playerName = nil;
-    self.levelFileNames = nil;
-    self.records = nil;
-    
     [super dealloc];
 }
 
@@ -54,16 +75,16 @@ CGFloat FREE_FALL_ACCELERATION = 9.81;
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         self.title = NSLocalizedString(@"Micro Maze", @"Micro Maze");
-        self.playerName = @"UnknownPlayer";
 
         // Load levels list
         NSFileManager *fileManager = [NSFileManager defaultManager];
         NSString *levelsFolderPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingString:@"/Levels"];
-        self.levelFileNames = [fileManager contentsOfDirectoryAtPath:levelsFolderPath
-                                                               error:nil];
+        [MasterViewController setLevelFileNames:[fileManager contentsOfDirectoryAtPath:levelsFolderPath
+                                                                                error:nil]];
         // Load records
-        self.records = [[[NSMutableDictionary alloc] initWithCapacity:self.levelFileNames.count] autorelease];
-        for (NSString *levelFileName in self.levelFileNames)
+        [MasterViewController setRecords:[[[NSMutableDictionary alloc] initWithCapacity:[MasterViewController getLevelFileNames].count] autorelease]];
+        
+        for (NSString *levelFileName in [MasterViewController getLevelFileNames])
         {
             NSString *levelContentString = [NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:levelFileName
                                                                                                               ofType:nil
@@ -79,7 +100,7 @@ CGFloat FREE_FALL_ACCELERATION = 9.81;
                 [levelRecords setValue:[recordData objectAtIndex:1] forKey:[recordData objectAtIndex:0]];
             }
             
-            [self.records setValue:levelRecords forKey:levelFileName];
+            [[MasterViewController getRecords] setValue:levelRecords forKey:levelFileName];
         }
     }
     
@@ -92,7 +113,7 @@ CGFloat FREE_FALL_ACCELERATION = 9.81;
     // Release any cached data, images, etc that aren't in use.
 }
 
-#pragma mark - View lifecycle
+#pragma view lifecycle
 
 - (void)viewDidLoad
 {
@@ -117,7 +138,7 @@ CGFloat FREE_FALL_ACCELERATION = 9.81;
 - (void)viewWillAppear:(BOOL)animated
 {    
     [super viewWillAppear:animated];
-    self.playerNameLabel.text = self.playerName;
+    self.playerNameLabel.text = [OptionsViewController getPlayerName];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -141,12 +162,12 @@ CGFloat FREE_FALL_ACCELERATION = 9.81;
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
+#pragma Outlets
+
 - (IBAction)PlayGameButtonIsTouchedDown:(id)sender {
     if (!self.levelsViewController) {
         self.levelsViewController = [[[LevelsViewController alloc] initWithNibName:@"LevelsViewController"
-                                                                            bundle:nil
-                                                                    levelFileNames:self.levelFileNames
-                                                                           records:self.records] autorelease];
+                                                                            bundle:nil] autorelease];
     }
     [self.navigationController pushViewController:self.levelsViewController animated:YES];
 }
@@ -154,9 +175,7 @@ CGFloat FREE_FALL_ACCELERATION = 9.81;
 - (IBAction)RecordsButtonIsTouchedDown:(id)sender {
     if (!self.recordsViewController) {
         self.recordsViewController = [[[RecordsViewController alloc] initWithNibName:@"RecordsViewController"
-                                                                            bundle:nil
-                                                                    levelFileNames:self.levelFileNames
-                                                                           records:self.records] autorelease];
+                                                                            bundle:nil] autorelease];
     }
     [self.navigationController pushViewController:self.recordsViewController animated:YES];
 }
@@ -164,8 +183,7 @@ CGFloat FREE_FALL_ACCELERATION = 9.81;
 - (IBAction)OptionsButtonIsTouchedDown:(id)sender {
     if (!self.optionsViewController) {
         self.optionsViewController = [[[OptionsViewController alloc] initWithNibName:@"OptionsViewController"
-                                                                              bundle:nil
-                                                                 masterViewControlle:self] autorelease];
+                                                                              bundle:nil] autorelease];
     }
     [self.navigationController pushViewController:self.optionsViewController animated:YES];
 }
@@ -177,11 +195,11 @@ CGFloat FREE_FALL_ACCELERATION = 9.81;
     CGFloat playTime = [[notification.userInfo valueForKey:@"playTime"] floatValue];
     
     // Level record update
-    NSMutableDictionary *levelRecords = [self.records valueForKey:levelFileName];
-    [levelRecords setValue:[NSString stringWithFormat:@"%.1f", playTime] forKey:self.playerName];
+    NSMutableDictionary *levelRecords = [[MasterViewController getRecords] valueForKey:levelFileName];
+    [levelRecords setValue:[NSString stringWithFormat:@"%.1f", playTime] forKey:[OptionsViewController getPlayerName]];
     
     // Write to file
-    NSString *newLevelContentString = [NSString stringWithFormat:@"%d\n%@ %.2f\n", levelRecords.count, self.playerName, playTime];
+    NSString *newLevelContentString = [NSString stringWithFormat:@"%d\n%@ %.1f\n", levelRecords.count, [OptionsViewController getPlayerName], playTime];
     
     NSString *pathToLevelFile = [[NSBundle mainBundle] pathForResource:levelFileName
                                                                 ofType:nil

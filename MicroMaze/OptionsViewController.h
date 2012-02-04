@@ -11,6 +11,9 @@
 
 @interface OptionsViewController : UIViewController <UITextFieldDelegate>
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil masterViewControlle:(MasterViewController *)masterViewController;
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil/* masterViewControlle:(MasterViewController *)masterViewController*/;
+
++ (NSString *) getPlayerName;
++ (CGFloat) getFreeFallAcceleration;
 
 @end

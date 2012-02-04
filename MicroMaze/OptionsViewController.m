@@ -7,47 +7,94 @@
 //
 
 #import "MasterViewController.h"
+#import "DetailViewController.h"
 #import "OptionsViewController.h"
 
-extern CGFloat FREE_FALL_ACCELERATION;
-CGFloat const ANIMATE_DURATION = 0.4;
-
 @interface OptionsViewController()
-{
-    NSInteger _distanceToMoveView;
-}
 
-@property(retain, nonatomic) MasterViewController *masterViewConrtroller;
+@property (readwrite) CGFloat distanceToMoveView;
 
 @property (retain, nonatomic) IBOutlet UITextField *playerNameTextField;
 @property (retain, nonatomic) IBOutlet UITextField *freeFallAccelerationTextField;
 
 - (void) returnViewToInitialState;
 
++ (CGFloat) getViewAnimateDuration;
++ (NSString *) getPlayerNameDefault;
++ (void) setPlayerName:(NSString *)newPlayerName;
++ (CGFloat) getFreeFallAccelerationDefault;
++ (void) setFreeFallAcceleration:(CGFloat)newFreeFallAcceleration;
+
 @end
 
 @implementation OptionsViewController
 
-@synthesize masterViewConrtroller = _masterViewConrtroller;
+#pragma statics
+
+static CGFloat const _viewAnimateDuration = 0.4;
+
+static NSString * const _playerNameDefault = @"Unknown player";
+static NSString *_playerName = @"Unknown player";
+
+static CGFloat const _freeFallAccelerationDefault = 9.81;
+static CGFloat _freeFallAcceleration = 9.81;
+
++ (CGFloat) getViewAnimateDuration
+{
+    return _viewAnimateDuration;
+}
+
++ (NSString *) getPlayerNameDefault
+{
+    return _playerNameDefault;
+}
+
++ (NSString *) getPlayerName
+{
+    return _playerName;
+}
+
++ (void) setPlayerName:(NSString *)newPlayerName
+{
+    [newPlayerName retain];
+    [_playerName release];
+    _playerName = newPlayerName;
+}
+
++ (CGFloat) getFreeFallAccelerationDefault
+{
+    return _freeFallAccelerationDefault;
+}
+
++ (CGFloat) getFreeFallAcceleration
+{
+    return _freeFallAcceleration;
+}
+
++ (void) setFreeFallAcceleration:(CGFloat)newFreeFallAcceleration
+{
+    _freeFallAcceleration = newFreeFallAcceleration;
+}
+
+#pragma non statics
+
+@synthesize distanceToMoveView = _distanceToMoveView;
 @synthesize playerNameTextField = _playerNameTextField, freeFallAccelerationTextField = _freeFallAccelerationTextField;
 
 - (void)dealloc
 {
-    self.masterViewConrtroller = nil;
-    
     self.playerNameTextField = nil;
     self.freeFallAccelerationTextField = nil;
     
     [super dealloc];
 }
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil masterViewControlle:(MasterViewController *)masterViewController
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self)
     {
-        _distanceToMoveView = 0;
-        self.masterViewConrtroller = masterViewController;
+        self.distanceToMoveView = 0;
     }
     
     return self;
@@ -57,8 +104,8 @@ CGFloat const ANIMATE_DURATION = 0.4;
 {
     [super viewWillAppear:animated];
     
-    self.playerNameTextField.text = self.masterViewConrtroller.playerName;
-    self.freeFallAccelerationTextField.text = [NSString stringWithFormat:@"%.2f", FREE_FALL_ACCELERATION];
+    self.playerNameTextField.text = [OptionsViewController getPlayerName];
+    self.freeFallAccelerationTextField.text = [NSString stringWithFormat:@"%.2f", [OptionsViewController getFreeFallAcceleration]];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -80,20 +127,28 @@ CGFloat const ANIMATE_DURATION = 0.4;
     [self.freeFallAccelerationTextField resignFirstResponder];
 }
 
+- (void) returnViewToInitialState
+{
+    [UIView animateWithDuration:[OptionsViewController getViewAnimateDuration] animations:^{
+        self.view.center = CGPointMake(self.view.center.x, self.view.center.y + self.distanceToMoveView);
+    }];
+    self.distanceToMoveView = 0;
+}
+
+#pragma TextFieldDelegate
+
 - (BOOL)textFieldShouldReturn:(UITextField *)textField
 {
     [textField resignFirstResponder];
-    [self returnViewToInitialState];
-    
     return YES;
 }
 
 - (void)textFieldDidBeginEditing:(UITextField *)textField
 {
-    _distanceToMoveView = textField.center.y - self.view.center.y + textField.bounds.size.height;
+    self.distanceToMoveView = textField.center.y - self.view.center.y + textField.bounds.size.height;
     
-    [UIView animateWithDuration:ANIMATE_DURATION animations:^{
-        self.view.center = CGPointMake(self.view.center.x, self.view.center.y - _distanceToMoveView);
+    [UIView animateWithDuration:[OptionsViewController getViewAnimateDuration] animations:^{
+        self.view.center = CGPointMake(self.view.center.x, self.view.center.y - self.distanceToMoveView);
     }];
 }
 
@@ -102,20 +157,26 @@ CGFloat const ANIMATE_DURATION = 0.4;
     [self returnViewToInitialState];
 }
 
+#pragma Outlets actions
+
 - (IBAction)playerNameEditingDidEnd:(id)sender {
-    self.masterViewConrtroller.playerName = self.playerNameTextField.text;
+    [OptionsViewController setPlayerName:self.playerNameTextField.text];
 }
 
 - (IBAction)freeFallAccelerationEditingDidEnd:(id)sender {
-    FREE_FALL_ACCELERATION = [self.freeFallAccelerationTextField.text floatValue];
+    [OptionsViewController setFreeFallAcceleration: [self.freeFallAccelerationTextField.text floatValue]];
 }
 
-
-- (void) returnViewToInitialState
-{
-    [UIView animateWithDuration:ANIMATE_DURATION animations:^{
-        self.view.center = CGPointMake(self.view.center.x, self.view.center.y + _distanceToMoveView);
-    }];
+- (IBAction)toDefaultSettingsButtonIsTouchedDown:(id)sender {
+    self.distanceToMoveView = 0;
+    
+    self.playerNameTextField.text = [OptionsViewController getPlayerNameDefault];
+    [OptionsViewController setPlayerName:self.playerNameTextField.text];
+    [self playerNameEditingDidEnd:self];
+    
+    self.freeFallAccelerationTextField.text = [NSString stringWithFormat:@"%.2f", [OptionsViewController getFreeFallAccelerationDefault]];
+    [OptionsViewController setFreeFallAcceleration:[self.freeFallAccelerationTextField.text floatValue]];
+    [self freeFallAccelerationEditingDidEnd:self];
 }
 
 @end

@@ -6,16 +6,15 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
+#import "MasterViewController.h"
 #import "RecordsDetailViewController.h"
 
 @interface RecordsDetailViewController()
 
-@property(retain, nonatomic) NSString *levelFileName;
 @property(retain, nonatomic) NSDictionary *levelRecords;
-
 @property(retain, nonatomic) NSArray *playersOrderedByRecord;
 
-- (NSArray *)playersOrderedByRecord;
+- (NSArray *)returnPlayersOrderedByRecord;
 
 @end
 
@@ -34,22 +33,15 @@
     [super dealloc];
 }
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil levelFileName:(NSString *)levelFileName levelRecords:(NSDictionary *)levelRecords
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (self) {
-        self.levelFileName = levelFileName;
-        self.levelRecords = levelRecords;
-        
-        NSString *levelName = [self.levelFileName substringToIndex:self.levelFileName.length - 4];
-        self.title = NSLocalizedString(levelName, levelName);
-        
-        self.playersOrderedByRecord = [self playersOrderedByRecord];
-    }
-    return self;
-}
+//- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+//{
+//    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+//    if (self) {
+//    }
+//    return self;
+//}
 
-- (NSArray *)playersOrderedByRecord
+- (NSArray *)returnPlayersOrderedByRecord
 {
     return [self.levelRecords keysSortedByValueUsingComparator:^NSComparisonResult(id obj1, id obj2) {
         if ([obj1 floatValue] == [obj2 floatValue]) {
@@ -58,6 +50,26 @@
         return [obj1 floatValue] < [obj2 floatValue] ? NSOrderedAscending : NSOrderedDescending;
     }];
 }
+
+#pragma view lifecycle
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    self.levelRecords = [[MasterViewController getRecords] objectForKey:self.levelFileName];
+    self.playersOrderedByRecord = [self returnPlayersOrderedByRecord];
+    
+    NSString *levelName = [self.levelFileName substringToIndex:self.levelFileName.length - 4];
+    self.title = NSLocalizedString(levelName, levelName);
+    
+    [self.tableView reloadData];
+}
+
+- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+{
+    return (interfaceOrientation == UIInterfaceOrientationPortrait);
+}
+
+#pragma TableViewController
 
 // Customize the number of sections in the table view.
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -107,11 +119,6 @@
     }
     
     return cell;
-}
-
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
-{
-    return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
 @end

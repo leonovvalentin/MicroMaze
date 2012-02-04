@@ -9,7 +9,4 @@
 #import <UIKit/UIKit.h>
 
 @interface RecordsViewController : UITableViewController
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil levelFileNames:(NSArray *)levelFileNames records:(NSDictionary *)records;
-
 @end

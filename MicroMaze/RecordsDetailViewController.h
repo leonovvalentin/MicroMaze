@@ -10,6 +10,6 @@
 
 @interface RecordsDetailViewController : UITableViewController
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil levelFileName:(NSString *)levelFileName levelRecords:(NSDictionary *)levelRecords;
+@property (retain, nonatomic) NSString *levelFileName;
 
 @end

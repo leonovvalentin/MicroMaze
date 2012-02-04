@@ -6,6 +6,7 @@
 //  Copyright (c) 2012 __MyCompanyName__. All rights reserved.
 //
 
+#import "MasterViewController.h"
 #import "LevelsViewController.h"
 #import "DetailViewController.h"
 
@@ -13,47 +14,33 @@
 
 @property (strong, nonatomic) DetailViewController *detailViewController;
 
-@property (retain, nonatomic) NSArray *levelFileNames;
-@property(retain, nonatomic) NSDictionary *records;
-
 @property (retain, nonatomic) NSCache *levelsCache;
 
 @end
 
 @implementation LevelsViewController
 
+#pragma non statics
+
 @synthesize detailViewController = _detailViewController;
-@synthesize levelFileNames = _levelFileNames, records = _records;
 @synthesize levelsCache = _levelsCache;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil levelFileNames:(NSArray *)levelFileNames records:(NSDictionary *)records
+- (void)dealloc
+{
+    self.detailViewController = nil;    
+    self.levelsCache = nil;
+    
+    [super dealloc];
+}
+
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         self.title = NSLocalizedString(@"Levels", @"Levels");
-        
         self.levelsCache = [[[NSCache alloc] init] autorelease];
-        NSFileManager *fileManager = [NSFileManager defaultManager];
-        NSString *levelsFolderPath = [[[NSBundle mainBundle] resourcePath] stringByAppendingString:@"/Levels"];
-        self.levelFileNames = [fileManager contentsOfDirectoryAtPath:levelsFolderPath
-                                                               error:nil];
-        
-        self.levelFileNames = levelFileNames;
-        self.records = records;
     }
     return self;
-}
-							
-- (void)dealloc
-{
-    self.detailViewController = nil;
-
-    self.levelFileNames = nil;
-    self.records = nil;
-    
-    self.levelsCache = nil;
-    
-    [super dealloc];
 }
 
 - (void)didReceiveMemoryWarning
@@ -62,7 +49,7 @@
     // Release any cached data, images, etc that aren't in use.
 }
 
-#pragma mark - View lifecycle
+#pragma view lifecycle
 
 - (void)viewDidLoad
 {
@@ -102,6 +89,8 @@
     // Return YES for supported orientations
     return (interfaceOrientation == UIInterfaceOrientationPortrait);}
 
+#pragma TableViewController
+
 // Customize the number of sections in the table view.
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -110,7 +99,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return self.levelFileNames.count;
+    return [MasterViewController getLevelFileNames].count;
 }
 
 // Customize the appearance of table view cells.
@@ -125,53 +114,15 @@
     }
 
     // Configure the cell.
-    NSString *fullFileName = [self.levelFileNames objectAtIndex:indexPath.row];
+    NSString *fullFileName = [[MasterViewController getLevelFileNames] objectAtIndex:indexPath.row];
     NSString *levelName = [fullFileName substringToIndex:fullFileName.length-4];
     cell.textLabel.text = NSLocalizedString(levelName, levelName);
     return cell;
 }
 
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
-    return YES;
-}
-*/
-
-/*
-// Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source.
-        [tableView deleteRowsAtIndexPaths:[NSArray arrayWithObject:indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view.
-    }   
-}
-*/
-
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
-{
-}
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSString *levelFileName = [self.levelFileNames objectAtIndex:indexPath.row];
+    NSString *levelFileName = [[MasterViewController getLevelFileNames] objectAtIndex:indexPath.row];
     self.detailViewController = [self.levelsCache objectForKey:levelFileName];
     if (!self.detailViewController)
     {

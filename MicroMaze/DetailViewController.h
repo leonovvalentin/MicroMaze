@@ -12,11 +12,6 @@
 
 @interface DetailViewController : UIViewController <UIAlertViewDelegate>
 
-@property(retain, nonatomic) NSMutableArray *balls;
-@property(retain, nonatomic) NSMutableArray *holes;
-@property(retain, nonatomic) NSMutableArray *finishHoles;
-@property(retain, nonatomic) NSMutableArray *bounds;
-
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil levelFileName:(NSString *)levelFileName;
 
 @end
