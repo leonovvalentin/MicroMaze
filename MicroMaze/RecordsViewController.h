@@ -9,4 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface RecordsViewController : UITableViewController
+
++ (CGFloat) getRecordForLevelFileName:(NSString *)levelFileName;
+
 @end

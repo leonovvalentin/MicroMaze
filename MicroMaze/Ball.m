@@ -35,7 +35,7 @@
 #pragma statics
 
 static CGFloat const _pixelsInMeter = 6749.25;
-static CGFloat const _refreshTimeInterval = 0.05/*0.01*/;
+static CGFloat const _refreshTimeInterval = 0.05;
 static CGFloat const _velocityCoefficientAfterImpact = 0.2;
 
 + (CGFloat) getPixelsInMeter
@@ -188,9 +188,14 @@ static CGFloat const _velocityCoefficientAfterImpact = 0.2;
     Vector newForce = VectorMake(hole.position.x - self.position.x, hole.position.y - self.position.y);
     if (vectorLength(newForce) < hole.bounds.size.width / 2) {
         [self.redrawTimer invalidate];
-        self.position = hole.position;
-        self.zPosition = -2;
-        [self ballInTheHoleNotification];
+        
+        [CATransaction begin];
+            [CATransaction setCompletionBlock:^{
+                        [self ballInTheHoleNotification];
+                    }];
+            self.position = hole.position;
+            self.zPosition = -2;
+        [CATransaction commit];
     }
 }
 
@@ -199,8 +204,13 @@ static CGFloat const _velocityCoefficientAfterImpact = 0.2;
     Vector newForce = VectorMake(finishHole.position.x - self.position.x, finishHole.position.y - self.position.y);
     if (vectorLength(newForce) < finishHole.bounds.size.width / 2) {
         [self.redrawTimer invalidate];
-        self.position = finishHole.position;
-        [self ballInTheFinishHoleNotification];
+        
+        [CATransaction begin];
+            [CATransaction setCompletionBlock:^{
+                [self ballInTheFinishHoleNotification];
+            }];
+            self.position = finishHole.position;
+        [CATransaction commit];
     }
 }
 

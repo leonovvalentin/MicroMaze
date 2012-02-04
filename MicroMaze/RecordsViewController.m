@@ -18,6 +18,22 @@
 
 @implementation RecordsViewController
 
+# pragma statics
+
++ (CGFloat) getRecordForLevelFileName:(NSString *)levelFileName
+{
+    NSArray *levelRecords = [(NSDictionary *)[[MasterViewController getRecords] valueForKey:levelFileName] allValues];
+    CGFloat record = CGFLOAT_MAX;
+    
+    for (NSString *playerTime in levelRecords) {
+        if (record > [playerTime floatValue]) {
+            record = [playerTime floatValue];
+        }
+    }
+    
+    return record;
+}
+
 #pragma non statics
 
 @synthesize recordsDetailViewController = _recordsDetailViewController;

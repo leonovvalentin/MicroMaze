@@ -7,12 +7,14 @@
 //
 
 #import "DetailViewController.h"
+#import "RecordsViewController.h"
 #import "OptionsViewController.h"
 #import "Ball.h"
 
 @interface DetailViewController ()
 
 @property (retain, nonatomic) NSString *levelFileName;
+@property(readwrite, nonatomic) CGFloat levelRecord;
 
 @property(retain, nonatomic) NSMutableArray *balls;
 @property(retain, nonatomic) NSMutableArray *holes;
@@ -22,9 +24,11 @@
 @property(retain, nonatomic) CMMotionManager *motionManager;
 
 @property(retain, nonatomic) NSTimer *timer;
+@property(retain, nonatomic) NSTimer *timerForColor;
 @property(nonatomic) CGFloat playTime;
 @property (retain, nonatomic) IBOutlet UITextField *timerTextField;
 @property (retain, nonatomic) IBOutlet UITextField *recordTimeTextField;
+@property (readwrite, nonatomic) BOOL textFieldIsFlashing;
 
 - (void) loadLevel;
 
@@ -34,13 +38,27 @@
 - (CALayer *) boundWithXCoordinate:(NSInteger)xCoordinate yCoordinate:(NSInteger)yCoordinate length:(NSInteger)length horisontal:(BOOL)horisontal;
 - (CALayer *) finishHoleWithXcoordinate:(NSInteger)xCoordinate yCoordinate:(NSInteger)yCoordinate;
 
-- (void) updateTimerTextField;
+- (void) updateTextFieldTimer:(NSTimer *)timer;
+- (void) updateTextFieldColorTimer:(NSTimer *)timer;
 
 - (void) handleBallInTheHoleNotification:(NSNotification *)notification;
 - (void) handleBallInTheFinishHoleNotification:(NSNotification *)notification;
 
 - (void)addToRecordsNotificationForPlayTime:(CGFloat)playTime;
 
++ (CGFloat) getTimeBeforRecordBeforeFlashing;
++ (CGFloat) getTextFieldFlashingFrequency;
+
++ (CGFloat) getBallSize;
++ (CGFloat) getHoleSize;
++ (CGFloat) getFinishHoleSize;
++ (CGFloat) getBoundSize;
+
++ (CGFloat) getWindowWidth;
++ (CGFloat) getWindowHeight;
++ (CGFloat) getMaxPlayTime;
++ (CGFloat) getTimerUpdateInterval;
++ (CGFloat) getTimerForColorUpdateInterval;
 + (CGFloat) getFreeFallAccelerationReal;
 
 @end
@@ -48,6 +66,9 @@
 @implementation DetailViewController
 
 #pragma statics
+
+static CGFloat const _timeBeforRecordBeforeFlashing = 5.0;
+static CGFloat const _textFieldFlashingFrequency = 0.5;
 
 static CGFloat const _ballSize = 40;
 static CGFloat const _holeSize = 50;
@@ -58,7 +79,18 @@ static CGFloat const _windowWidth = 320;
 static CGFloat const _windowHeight = 416;
 static CGFloat const _maxPlayTime = 99.99;
 static CGFloat const _timerUpdateInterval = 0.2;
+static CGFloat const _timerForColorUpdateInterval = 0.5;
 static CGFloat const _freeFallAccelerationReal = 9.81;
+
++ (CGFloat) getTimeBeforRecordBeforeFlashing
+{
+    return _timeBeforRecordBeforeFlashing;
+}
+
++ (CGFloat) getTextFieldFlashingFrequency
+{
+    return _textFieldFlashingFrequency;
+}
 
 + (CGFloat) getBallSize
 {
@@ -100,6 +132,11 @@ static CGFloat const _freeFallAccelerationReal = 9.81;
     return _timerUpdateInterval;
 }
 
++ (CGFloat) getTimerForColorUpdateInterval
+{
+    return _timerForColorUpdateInterval;
+}
+
 + (CGFloat) getFreeFallAccelerationReal
 {
     return _freeFallAccelerationReal;
@@ -107,10 +144,10 @@ static CGFloat const _freeFallAccelerationReal = 9.81;
 
 #pragma non statics
 
+@synthesize levelFileName = _levelFileName, levelRecord = _levelRecord;
 @synthesize balls = _balls, holes = _holes, finishHoles = _finishHoles, bounds = _bounds;
-@synthesize levelFileName = _levelFileName;
 @synthesize motionManager = _motionManager;
-@synthesize timer = _timer, playTime = _playTime, timerTextField = _timerTextField, recordTimeTextField = _recordTimeTextField;;
+@synthesize timer = _timer, timerForColor = _timerForColor, playTime = _playTime, timerTextField = _timerTextField, recordTimeTextField = _recordTimeTextField, textFieldIsFlashing = _textFieldIsFlashing;
 
 - (void)dealloc
 {
@@ -147,6 +184,7 @@ static CGFloat const _freeFallAccelerationReal = 9.81;
         
         self.motionManager = [[[CMMotionManager alloc] init] autorelease];
         self.playTime = 0.0;
+        self.textFieldIsFlashing = NO;
     }
     
     return self;
@@ -344,72 +382,28 @@ static CGFloat const _freeFallAccelerationReal = 9.81;
     return ball;
 }
 
-- (void)didReceiveMemoryWarning
-{
-    [super didReceiveMemoryWarning];
-    // Release any cached data, images, etc that aren't in use.
-}
-
-#pragma view lifecycle
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-	// Do any additional setup after loading the view, typically from a nib.
-}
-
-- (void)viewDidUnload
-{
-    [super viewDidUnload];
-    // Release any retained subviews of the main view.
-    // e.g. self.myOutlet = nil;
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleBallInTheHoleNotification:)
-                                                 name:@"BallInTheHole"
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleBallInTheFinishHoleNotification:)
-                                                 name:@"BallInTheFinishHole"
-                                               object:nil];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    for (Ball *ball in self.balls)
-    {
-        [ball startWithBounds:self.bounds Holes:self.holes FinishHoles:self.finishHoles];
-    }
-    
-    // Timer
-    self.timer = [NSTimer scheduledTimerWithTimeInterval:[DetailViewController getTimerUpdateInterval]
-                                                  target:self
-                                                selector:@selector(updateTimerTextField)
-                                                userInfo:nil
-                                                 repeats:YES];
-    
-    // Accelerometer
-    [self.motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue]
-                                             withHandler:^(CMAccelerometerData *accelerometerData, NSError *error) {
-                                                 for (Ball *ball in self.balls) {
-                                                     CGFloat aX = accelerometerData.acceleration.x * [OptionsViewController getFreeFallAcceleration] / [DetailViewController getFreeFallAccelerationReal];
-                                                     CGFloat aY = -accelerometerData.acceleration.y * [OptionsViewController getFreeFallAcceleration] / [DetailViewController getFreeFallAccelerationReal];
-//                                                     NSLog(@"%f, %f", aX, aY);
-                                                     ball.force = VectorMake(ball.mass * aX, ball.mass * aY);
-                                                 }
-                                             }];
-
-    
-    [super viewDidAppear:animated];
-}
-
-- (void) updateTimerTextField
+- (void) updateTextFieldTimer:(NSTimer *)timer
 {
     self.playTime += [DetailViewController getTimerUpdateInterval];
+    
+    if (!self.textFieldIsFlashing)
+    {
+        if (self.playTime > self.levelRecord - [DetailViewController getTimeBeforRecordBeforeFlashing])
+        {
+            self.timerForColor = [NSTimer scheduledTimerWithTimeInterval:[DetailViewController getTimerForColorUpdateInterval]
+                                             target:self
+                                           selector:@selector(updateTextFieldColorTimer:)
+                                           userInfo:nil
+                                            repeats:YES];
+            self.textFieldIsFlashing = YES;
+        }
+    }
+
+    if (self.playTime > self.levelRecord)
+    {
+        [self.timerForColor invalidate];
+        self.timerTextField.backgroundColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.33];
+    }
     
     if (self.playTime > [DetailViewController getMaxPlayTime])
     {
@@ -421,30 +415,118 @@ static CGFloat const _freeFallAccelerationReal = 9.81;
         [self.timer invalidate];
         
         UIAlertView *alertOfTooLong = [[[UIAlertView alloc] initWithTitle:@"You are losеr"
-                                                                        message:@"It's too long..."
-                                                                       delegate:self
-                                                              cancelButtonTitle:@"Ok"
-                                                              otherButtonTitles:nil, nil] autorelease];
+                                                                  message:@"It's too long..."
+                                                                 delegate:self
+                                                        cancelButtonTitle:@"Ok"
+                                                        otherButtonTitles:nil, nil] autorelease];
         [alertOfTooLong show];
     }
     
-    self.timerTextField.text = [NSString stringWithFormat:@"%0.2f", self.playTime];
+    self.timerTextField.text = [NSString stringWithFormat:@"%0.1f", self.playTime];
 }
 
-- (void)viewWillDisappear:(BOOL)animated
+- (void) updateTextFieldColorTimer:(NSTimer *)timer
+{
+    UIColor *greenColor_ = [UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:0.33];
+    UIColor *redColor_ = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.33];
+//    UIColor *greenColor = [UIColor greenColor];
+//    UIColor *redColor = [UIColor redColor];
+
+    if ([self.timerTextField.backgroundColor isEqual:greenColor_])
+    {
+        self.timerTextField.backgroundColor = redColor_;
+    }
+    else
+    {
+        self.timerTextField.backgroundColor = greenColor_;
+    }
+}
+
+- (void) didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Release any cached data, images, etc that aren't in use.
+}
+
+#pragma view lifecycle
+
+- (void) viewDidLoad
+{
+    [super viewDidLoad];
+	// Do any additional setup after loading the view, typically from a nib.
+}
+
+- (void) viewDidUnload
+{
+    [super viewDidUnload];
+    // Release any retained subviews of the main view.
+    // e.g. self.myOutlet = nil;
+}
+
+- (void) viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    
+    self.levelRecord = [RecordsViewController getRecordForLevelFileName:self.levelFileName];
+    
+    if (self.levelRecord < CGFLOAT_MAX) {
+        self.recordTimeTextField.text = [NSString stringWithFormat:@"%.1f", self.levelRecord];
+    }
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleBallInTheHoleNotification:)
+                                                 name:@"BallInTheHole"
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(handleBallInTheFinishHoleNotification:)
+                                                 name:@"BallInTheFinishHole"
+                                               object:nil];
+}
+
+- (void) viewDidAppear:(BOOL)animated
+{
+    for (Ball *ball in self.balls)
+    {
+        [ball startWithBounds:self.bounds Holes:self.holes FinishHoles:self.finishHoles];
+    }
+    
+    // Timer
+    self.timer = [NSTimer scheduledTimerWithTimeInterval:[DetailViewController getTimerUpdateInterval]
+                                                  target:self
+                                                selector:@selector(updateTextFieldTimer:)
+                                                userInfo:nil
+                                                 repeats:YES];
+    
+    // Accelerometer
+    [self.motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue mainQueue]
+                                             withHandler:^(CMAccelerometerData *accelerometerData, NSError *error) {
+                                                 for (Ball *ball in self.balls) {
+                                                     CGFloat aX = accelerometerData.acceleration.x * [OptionsViewController getFreeFallAcceleration] / [DetailViewController getFreeFallAccelerationReal];
+                                                     CGFloat aY = -accelerometerData.acceleration.y * [OptionsViewController getFreeFallAcceleration] / [DetailViewController getFreeFallAccelerationReal];
+                                                     ball.force = VectorMake(ball.mass * aX, ball.mass * aY);
+                                                 }
+                                             }];
+    self.textFieldIsFlashing = NO;
+    [super viewDidAppear:animated];
+}
+
+- (void) viewWillDisappear:(BOOL)animated
 {
     [self.motionManager stopAccelerometerUpdates];
 	[super viewWillDisappear:animated];
 }
 
-- (void)viewDidDisappear:(BOOL)animated
+- (void) viewDidDisappear:(BOOL)animated
 {
     [self.timer invalidate];
+    [self.timerForColor invalidate];
+    
     for (Ball *ball in self.balls)
     {
         [ball toInitialState];
     }
     self.playTime = 0.0;
+    self.timerTextField.backgroundColor = [UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:0.33];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self
                                                     name:@"BallInTheHole"
@@ -455,14 +537,14 @@ static CGFloat const _freeFallAccelerationReal = 9.81;
 	[super viewDidDisappear:animated];
 }
 
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation
 {
     return (interfaceOrientation == UIInterfaceOrientationPortrait);
 }
 
 #pragma AlertViewDelegate
 
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+- (void) alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
     if (alertView.title == @"You are losеr")
     {
@@ -470,7 +552,7 @@ static CGFloat const _freeFallAccelerationReal = 9.81;
     }
     
     if (alertView.title == @"You are winner!")
-    {
+    {        
         if (buttonIndex == 0) {
             [self addToRecordsNotificationForPlayTime:self.playTime];
         }
@@ -496,17 +578,29 @@ static CGFloat const _freeFallAccelerationReal = 9.81;
 {
     [self.timer invalidate];
     
-    UIAlertView *alertOfBallInTheFinishHole = [[[UIAlertView alloc] initWithTitle:@"You are winner!"
-                                                                  message:@"Congratulations! "
-                                                                 delegate:self
-                                                        cancelButtonTitle:@"Add to records"
-                                                        otherButtonTitles:@"No, thanks", nil] autorelease];
+    UIAlertView *alertOfBallInTheFinishHole;
+    if (self.playTime < self.levelRecord) {
+        alertOfBallInTheFinishHole = [[[UIAlertView alloc] initWithTitle:@"You are winner!"
+                                                                              message:@"It's a new Record! Congratulations! "
+                                                                             delegate:self
+                                                                    cancelButtonTitle:@"Add to records"
+                                                                    otherButtonTitles:@"No, thanks", nil] autorelease];
+    }
+    else
+    {
+        alertOfBallInTheFinishHole = [[[UIAlertView alloc] initWithTitle:@"You are winner!"
+                                                                      message:@"Congratulations! "
+                                                                     delegate:self
+                                                            cancelButtonTitle:@"Add to records"
+                                                            otherButtonTitles:@"No, thanks", nil] autorelease];
+    }
+    
     [alertOfBallInTheFinishHole show];
 }
 
 #pragma notifications
 
-- (void)addToRecordsNotificationForPlayTime:(CGFloat)playTime
+- (void) addToRecordsNotificationForPlayTime:(CGFloat)playTime
 {
     NSMutableDictionary *notificationDictionary = [NSMutableDictionary dictionaryWithObject:self.levelFileName forKey:@"levelFileName"];
     [notificationDictionary setValue:[NSNumber numberWithFloat:playTime] forKey:@"playTime"];

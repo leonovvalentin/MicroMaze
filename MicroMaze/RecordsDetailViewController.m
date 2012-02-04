@@ -20,6 +20,8 @@
 
 @implementation RecordsDetailViewController
 
+#pragma non statics
+
 @synthesize levelFileName = _levelFileName, levelRecords = _levelRecords;
 @synthesize playersOrderedByRecord = _playersOrderedByRecord;
 

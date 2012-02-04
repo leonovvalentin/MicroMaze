@@ -34,10 +34,26 @@
 static CGFloat const _viewAnimateDuration = 0.4;
 
 static NSString * const _playerNameDefault = @"Unknown player";
-static NSString *_playerName = @"Unknown player";
+static NSString *_playerName;
 
 static CGFloat const _freeFallAccelerationDefault = 9.81;
-static CGFloat _freeFallAcceleration = 9.81;
+static CGFloat _freeFallAcceleration;
+
++ (void)initialize
+{
+    [super initialize];
+    
+    [OptionsViewController setPlayerName:[[NSUserDefaults standardUserDefaults] stringForKey:@"playerName"]];
+    if (![OptionsViewController getPlayerName]) {
+        [OptionsViewController setPlayerName:[OptionsViewController getPlayerNameDefault]];
+    }
+    
+    [OptionsViewController setFreeFallAcceleration:[[NSUserDefaults standardUserDefaults] floatForKey:@"freeFallAcceleration"]];
+    if (![OptionsViewController getFreeFallAcceleration]) {
+        [OptionsViewController setFreeFallAcceleration:[OptionsViewController getFreeFallAccelerationDefault]];
+    }
+
+}
 
 + (CGFloat) getViewAnimateDuration
 {
@@ -59,6 +75,8 @@ static CGFloat _freeFallAcceleration = 9.81;
     [newPlayerName retain];
     [_playerName release];
     _playerName = newPlayerName;
+    [[NSUserDefaults standardUserDefaults] setValue:newPlayerName
+                                              forKey:@"playerName"];
 }
 
 + (CGFloat) getFreeFallAccelerationDefault
@@ -73,7 +91,19 @@ static CGFloat _freeFallAcceleration = 9.81;
 
 + (void) setFreeFallAcceleration:(CGFloat)newFreeFallAcceleration
 {
-    _freeFallAcceleration = newFreeFallAcceleration;
+    if (newFreeFallAcceleration > 9.82) {
+        [[[UIAlertView alloc] initWithTitle:@"Incorrect value"
+                                    message:@"Sorry, it's too big acceleration"
+                                   delegate:self
+                          cancelButtonTitle:@"Ok"
+                          otherButtonTitles:nil, nil] show];
+    }
+    else
+    {
+        _freeFallAcceleration = newFreeFallAcceleration;
+        [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithFloat:newFreeFallAcceleration]
+                                                  forKey:@"freeFallAcceleration"];
+    }
 }
 
 #pragma non statics
