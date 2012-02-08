@@ -325,7 +325,11 @@ static CGFloat const _freeFallAccelerationReal = 9.81;
         bound.frame = CGRectMake(xCoordinate - [DetailViewController getBoundSize]/2, yCoordinate, [DetailViewController getBoundSize], length);
     }
     
-    bound.shadowOpacity = 1.0;
+//    if ([OptionsViewController getWithShadows])
+//    {
+//        bound.shadowOpacity = 1.0;
+//    }
+    
     bound.zPosition = 1;
     return bound;
 }
@@ -349,7 +353,12 @@ static CGFloat const _freeFallAccelerationReal = 9.81;
                                                                                             ofType:@"gif"
                                                                                        inDirectory:@"Images"]] CGImage];
     holeUp.frame = CGRectMake(xCoordinate - [DetailViewController getHoleSize]/2, yCoordinate - [DetailViewController getHoleSize]/2, [DetailViewController getHoleSize], [DetailViewController getHoleSize]);
-    holeUp.shadowOpacity = 0.7;
+    
+//    if ([OptionsViewController getWithShadows])
+//    {
+//        holeUp.shadowOpacity = 0.7;
+//    }
+    
     holeUp.shadowRadius = 3;
     holeUp.shadowOffset = CGSizeMake(-4, -4);
     holeUp.cornerRadius = [DetailViewController getHoleSize]/2;
@@ -375,7 +384,12 @@ static CGFloat const _freeFallAccelerationReal = 9.81;
                                                                                           ofType:@"gif"
                                                                                      inDirectory:@"Images"]] CGImage];
     ball.frame = CGRectMake(xCoordinate - [DetailViewController getBallSize]/2, yCoordinate - [DetailViewController getBallSize]/2, [DetailViewController getBallSize], [DetailViewController getBallSize]);
-    ball.shadowOpacity = 0.5;
+    
+//    if ([OptionsViewController getWithShadows])
+//    {
+//        ball.shadowOpacity = 0.5;
+//    }
+    
     ball.shadowRadius = 3;
     ball.shadowOffset = CGSizeMake(-2, -2);
     
@@ -427,18 +441,16 @@ static CGFloat const _freeFallAccelerationReal = 9.81;
 
 - (void) updateTextFieldColorTimer:(NSTimer *)timer
 {
-    UIColor *greenColor_ = [UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:0.33];
-    UIColor *redColor_ = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.33];
-//    UIColor *greenColor = [UIColor greenColor];
-//    UIColor *redColor = [UIColor redColor];
+    UIColor *greenColor = [UIColor colorWithRed:0.0 green:1.0 blue:0.0 alpha:0.33];
+    UIColor *redColor = [UIColor colorWithRed:1.0 green:0.0 blue:0.0 alpha:0.33];
 
-    if ([self.timerTextField.backgroundColor isEqual:greenColor_])
+    if ([self.timerTextField.backgroundColor isEqual:greenColor])
     {
-        self.timerTextField.backgroundColor = redColor_;
+            self.timerTextField.backgroundColor = redColor;
     }
-    else
+    else if ([self.timerTextField.backgroundColor isEqual:redColor])
     {
-        self.timerTextField.backgroundColor = greenColor_;
+            self.timerTextField.backgroundColor = greenColor;
     }
 }
 
@@ -466,6 +478,38 @@ static CGFloat const _freeFallAccelerationReal = 9.81;
 - (void) viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    // setShadows
+    if ([OptionsViewController getWithShadows])
+    {
+        for (Ball *ball in self.balls)
+        {
+            ball.shadowOpacity = 0.5;
+        }
+        for (CALayer *hole in self.holes)
+        {
+            hole.shadowOpacity = 0.7;
+        }
+        for (CALayer *bound in self.bounds)
+        {
+            bound.shadowOpacity = 1.0;
+        }
+    }
+    else
+    {
+        for (Ball *ball in self.balls)
+        {
+            ball.shadowOpacity = 0.0;
+        }
+        for (CALayer *hole in self.holes)
+        {
+            hole.shadowOpacity = 0.0;
+        }
+        for (CALayer *bound in self.bounds)
+        {
+            bound.shadowOpacity = 0.0;
+        }
+    }
     
     self.levelRecord = [RecordsViewController getRecordForLevelFileName:self.levelFileName];
     

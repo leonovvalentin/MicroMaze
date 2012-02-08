@@ -15,5 +15,6 @@
 
 + (NSString *) getPlayerName;
 + (CGFloat) getFreeFallAcceleration;
++ (BOOL) getWithShadows;
 
 @end

@@ -16,6 +16,7 @@
 
 @property (retain, nonatomic) IBOutlet UITextField *playerNameTextField;
 @property (retain, nonatomic) IBOutlet UITextField *freeFallAccelerationTextField;
+@property (retain, nonatomic) IBOutlet UISwitch *withShadowSwitch;
 
 - (void) returnViewToInitialState;
 
@@ -24,6 +25,8 @@
 + (void) setPlayerName:(NSString *)newPlayerName;
 + (CGFloat) getFreeFallAccelerationDefault;
 + (void) setFreeFallAcceleration:(CGFloat)newFreeFallAcceleration;
++ (BOOL) getWithShadowsDefault;
++ (void) setWithShadows:(BOOL)newWithShadows;
 
 @end
 
@@ -39,6 +42,9 @@ static NSString *_playerName;
 static CGFloat const _freeFallAccelerationDefault = 9.81;
 static CGFloat _freeFallAcceleration;
 
+static BOOL const _withShadowsDefault = NO;
+static BOOL _withShadows;
+
 + (void)initialize
 {
     [super initialize];
@@ -52,7 +58,11 @@ static CGFloat _freeFallAcceleration;
     if (![OptionsViewController getFreeFallAcceleration]) {
         [OptionsViewController setFreeFallAcceleration:[OptionsViewController getFreeFallAccelerationDefault]];
     }
-
+    
+    [OptionsViewController setWithShadows:[[NSUserDefaults standardUserDefaults] boolForKey:@"withShadows"]];
+    if (![OptionsViewController getWithShadows]) {
+        [OptionsViewController setWithShadows:[OptionsViewController getWithShadowsDefault]];
+    }
 }
 
 + (CGFloat) getViewAnimateDuration
@@ -106,15 +116,33 @@ static CGFloat _freeFallAcceleration;
     }
 }
 
++ (BOOL) getWithShadowsDefault
+{
+    return _withShadowsDefault;
+}
+
++ (BOOL) getWithShadows
+{
+    return _withShadows;
+}
+
++ (void) setWithShadows:(BOOL)newWithShadows
+{
+    _withShadows = newWithShadows;
+    [[NSUserDefaults standardUserDefaults] setValue:[NSNumber numberWithBool:newWithShadows]
+                                             forKey:@"withShadows"];
+}
+
 #pragma non statics
 
 @synthesize distanceToMoveView = _distanceToMoveView;
-@synthesize playerNameTextField = _playerNameTextField, freeFallAccelerationTextField = _freeFallAccelerationTextField;
+@synthesize playerNameTextField = _playerNameTextField, freeFallAccelerationTextField = _freeFallAccelerationTextField, withShadowSwitch = _withShadowSwitch;;
 
 - (void)dealloc
 {
     self.playerNameTextField = nil;
     self.freeFallAccelerationTextField = nil;
+    self.withShadowSwitch = nil;
     
     [super dealloc];
 }
@@ -136,6 +164,7 @@ static CGFloat _freeFallAcceleration;
     
     self.playerNameTextField.text = [OptionsViewController getPlayerName];
     self.freeFallAccelerationTextField.text = [NSString stringWithFormat:@"%.2f", [OptionsViewController getFreeFallAcceleration]];
+    [self.withShadowSwitch setOn:[OptionsViewController getWithShadows]];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -207,6 +236,22 @@ static CGFloat _freeFallAcceleration;
     self.freeFallAccelerationTextField.text = [NSString stringWithFormat:@"%.2f", [OptionsViewController getFreeFallAccelerationDefault]];
     [OptionsViewController setFreeFallAcceleration:[self.freeFallAccelerationTextField.text floatValue]];
     [self freeFallAccelerationEditingDidEnd:self];
+    
+    [self.withShadowSwitch setOn:[OptionsViewController getWithShadowsDefault]];
+    [OptionsViewController setWithShadows:self.withShadowSwitch.isOn];
+}
+
+- (IBAction)withShadowSwitchValueChanged:(id)sender {
+    [OptionsViewController setWithShadows:self.withShadowSwitch.isOn];
+    
+    if ([OptionsViewController getWithShadows])
+    {
+        [[[[UIAlertView alloc] initWithTitle:@"Warning"
+                                   message:@"It can badly affect the quality of the game"
+                                  delegate:self
+                         cancelButtonTitle:@"Ok"
+                         otherButtonTitles:nil, nil]autorelease] show];
+    }
 }
 
 @end
